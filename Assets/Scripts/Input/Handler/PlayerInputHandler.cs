@@ -1,9 +1,20 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInputHandler : MonoBehaviour
 {
+    [SerializeField] PlayerCharacter _playerCharacter;
     List<(DirectionEnum direction, float upperBand)> DirectionWithUpperBandMapping = new ();
+    private PlayerInputState _currentInputState = null;
+
+    // TODO: Refactor into a different file
+    class PlayerInputState
+    {
+        public Vector2 LookDirection = Vector2.zero;
+        public Vector2 MoveDirection = Vector2.zero;
+        public bool AttackAction = false;
+    }
 
 
     // Start is called before the first frame update
@@ -17,9 +28,56 @@ public class PlayerInputHandler : MonoBehaviour
     {
         PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
     }
+
+
+    private void FixedUpdate()
+    {
+        if (_currentInputState != null)
+        {
+            HandlePlayerMovement();
+            _currentInputState = null;
+        }
+    }
+
+    private void HandlePlayerMovement()
+    {
+        var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
+        var characterFacingVector = hasMovementInput
+            ? _currentInputState.MoveDirection 
+            : _currentInputState.LookDirection;
+        _playerCharacter.SetDirection(Vector2DirectionEnum(characterFacingVector));
+
+        if (hasMovementInput)
+        {
+            // TODO: Replace hardcoded speed with character speed attribute
+            _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection * 3 * Time.fixedDeltaTime;
+        }
+    }
+
+    // Creating a Stateful Input Handler for Player Character already thinking on having multiplayer in future
+    // Sets up the last input received for the player character to be able to handle on the next server tick
     private void HandleMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool attackAction)
     {
+        if (lookDirection != Vector2.zero)
+        {
+            GetCurrentInputState().LookDirection = lookDirection;
+        }
 
+        if(moveDirection != Vector2.zero)
+        {
+            GetCurrentInputState().MoveDirection = moveDirection;
+        }
+
+        GetCurrentInputState().AttackAction = attackAction;
+    }
+
+    private PlayerInputState GetCurrentInputState()
+    {
+        if( _currentInputState == null)
+        {
+            _currentInputState = new PlayerInputState();
+        }
+        return _currentInputState;
     }
 
     private DirectionEnum Vector2DirectionEnum(Vector2 direction)
