@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    DirectionEnum currentDirection = DirectionEnum.DIRECTION_NONE;
     public DirectionEnum CurrentDiretion => currentDirection;
+    protected DirectionEnum currentDirection = DirectionEnum.DIRECTION_NONE;
+
+    public void SetDirection(DirectionEnum direction)
+    {
+        if(direction == currentDirection) return;
+        currentDirection = direction;
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
