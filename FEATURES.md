@@ -7,8 +7,11 @@ A concise TODO-style list of implemented and planned features. Click an item to 
 ## Todo
 
 - [x] [Character Animation](FEATURES/Character-Animation.md) — base spritemap imported; example animations created
+- [x] [Character Movement](FEATURES/Character-Movement.md) — player movement + server-tick sync; input integration
 - [ ] [Custom Asset Importer](FEATURES/Character-Animation.md#custom-asset-importer) — automatically slice spritemap and generate animation clips
 - [ ] Build Pipeline - Whenever merging from DEV -> Master, will trigger a GH Actiion to build the project.
+
+
 
 ---
 

@@ -14,6 +14,17 @@ This project serves as:
 
 Project progress & feature tracker: [FEATURES.md](FEATURES.md)
 
+## Project Progress
+
+Check the `FEATURES.md` for full details. Quick summary:
+
+- **Features:**
+	- [x] [Character Animation](FEATURES/Character-Animation.md) — base spritemap imported; example animations created
+	- [x] [Character Movement](FEATURES/Character-Movement.md) — player movement and input integrated; server-tick sync
+	- [ ] [Sprite-sheet parser / Custom Asset Importer](FEATURES/Character-Animation.md#custom-asset-importer) — planned: automatic slicing and animation clip generation
+
+- **How to contribute:** update `FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` and link it here.
+
 ## Credits
 ### Assets
 Game assets purchased from [PVGames (Pioneer Valley Games)](http://www.pioneervalleygames.com/)
