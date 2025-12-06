@@ -13,10 +13,24 @@
 - Example animation clips created by hand and assigned to a basic Animator on the character prefab used in `SampleScene`.
 - Purpose: provide a working visual example to validate animation frames, pivots, and export parameters.
 
+## Release notes
+
+- Added a full set of eight-direction walk animation clips for a sample character, improving visual coverage for movement in all directions.
+- Introduced `CharacterAnimationHandler` to coordinate animation state changes from movement/direction input.
+- Updated the character `Sprites.controller` and sample scene to use the new directional clips.
+
+Developer notes
+
+- The current animation handler uses direct updates; consider refactoring to an event-driven approach to decouple input/character logic from animation playback.
+- All new animation clips were created manually; automating this process via a custom importer remains a planned enhancement (see the Custom Asset Importer section).
+
+
 ## Goals / Next Steps
 
 - Improve iteration speed by automating the spritemap -> animation pipeline.
 - Add configurable importer options (grid slicing, frame order, naming conventions).
+
+- Next work item: implement a sprite-sheet parser that automatically slices character spritemaps and generates `AnimationClip` assets and an optional `AnimatorController` (see the Custom Asset Importer section below for details).
 
 ## Custom Asset Importer (Planned)
 
@@ -65,6 +79,8 @@ This importer will run in the Unity Editor and convert a provided spritemap into
 - [ ] Implement `CharacterSpriteImporter` skeleton (Editor)
 - [ ] Add inspector UI for mapping and run/import process
 - [ ] Generate `AnimationClip`s, `AnimatorController`, and optional prefab wiring
+
+- [ ] Implement sprite-sheet parser + automatic animation creation (priority next work item)
 
 ---
 

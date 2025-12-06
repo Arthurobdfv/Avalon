@@ -44,7 +44,7 @@ public class PlayerInputHandler : MonoBehaviour
         var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
         var characterFacingVector = hasMovementInput
             ? _currentInputState.MoveDirection 
-            : _currentInputState.LookDirection;
+            : LookDirectionFromMousePosition(_currentInputState.LookDirection);
         _playerCharacter.SetDirection(Vector2DirectionEnum(characterFacingVector));
 
         if (hasMovementInput)
@@ -52,6 +52,13 @@ public class PlayerInputHandler : MonoBehaviour
             // TODO: Replace hardcoded speed with character speed attribute
             _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection * 3 * Time.fixedDeltaTime;
         }
+    }
+
+    private Vector2 LookDirectionFromMousePosition(Vector2 mousePosition)
+    {
+        var playerPos = Camera.main.WorldToScreenPoint(_playerCharacter.transform.position);
+        var lookDirection = (mousePosition - (Vector2)playerPos).normalized;
+        return lookDirection;
     }
 
     // Creating a Stateful Input Handler for Player Character already thinking on having multiplayer in future
