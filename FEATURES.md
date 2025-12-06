@@ -7,8 +7,10 @@ A concise TODO-style list of implemented and planned features. Click an item to 
 ## Todo
 
 - [x] [Character Animation](FEATURES/Character-Animation.md) — base spritemap imported; example animations created
+- [x] [Character Movement](FEATURES/Character-Movement.md) — player movement + server-tick sync; input integration
 - [ ] [Custom Asset Importer](FEATURES/Character-Animation.md#custom-asset-importer) — automatically slice spritemap and generate animation clips
- - [x] [Character Movement](FEATURES/Character-Movement.md) — player movement + server-tick sync; input integration
+- [ ] Build Pipeline - Whenever merging from DEV -> Master, will trigger a GH Actiion to build the project.
+
 
 
 ---
@@ -33,6 +35,14 @@ A concise TODO-style list of implemented and planned features. Click an item to 
    - Optional naming convention or JSON mapping file support
 - **Suggested location:** `Assets/Editor/Importers/CharacterSpriteImporter.cs`
 
+### Build Pipeline
+
+- **Status:** Planned
+- **Goal:** Automated CI/CD using github Actions to deploy to a GH Pages branch whenever merged to master
+- **Acceptance criteria:**
+   - Modular enough for in the future having it for multiple envs
+   - For builds from 'master', deploy to a GH Pages branch
 ---
 
 If you want, I can also create the starter editor script for the custom importer (skeleton) and add example configuration. Should I add that now?
+
