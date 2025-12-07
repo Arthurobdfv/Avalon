@@ -41,6 +41,24 @@ Out of scope (for now):
   - Support 4/8-direction sets consistent with `DirectionEnum` used at runtime
   - Naming convention examples: `walk_up`, `walk_down`, `walk_left`, `walk_right`, etc.
 
+## Progress update — Step 1: SpriteSheet splitting
+
+- Status: Implemented (initial)
+- Relevant paths:
+  - `Assets/Scripts/Editor/SpriteSheet2Anim/SpriteSheetParser.cs`
+  - `Assets/Scripts/Editor/SpriteSheet2Anim/InspectorCustomEditor/SpriteSheet2AnimCustomEditor.cs`
+  - `Assets/Scripts/Editor/SpriteSheet2Anim/Models/`
+  - `Assets/Sprites/Characters/` (updated `.png.meta` files reflect multiple-sprite slicing)
+- Summary of implementation:
+  - Uses an `AssetPostprocessor` (`SpriteSheetParser`) to configure sprite import and slice textures into a grid of sprites.
+  - `OnPreprocessTexture` sets `SpriteImportMode.Multiple`, `FilterMode.Point`, `TextureImporterType.Sprite`, `spritePixelsPerUnit = 50`, and disables mipmaps.
+  - `OnPostprocessTexture` reads per-asset settings from `SpriteSheet2AnimCustomEditor.SpriteSheetDefinitionsLookup` and calls `InternalSpriteUtility.GenerateGridSpriteRectangles(texture, ...)` using `SpriteWidth`/`SpriteHeight`.
+  - Rectangles are ordered by Y (desc) then X to produce a consistent frame order; sprite rects are named `<file>_<index>`.
+  - Uses `SpriteDataProviderFactories`/`SpriteEditorDataProvider` to set the generated `SpriteRect[]` and apply them to the importer.
+- Notes:
+  - `OnPostprocessSprites` is wired for future use (e.g., mapping sprites to animation sets) and currently logs the sprite count when settings exist.
+  - Meta changes observed under `Assets/Sprites/Characters/Female_Musketeer/` indicate slicing is active.
+
 ## Example JSON mapping (optional)
 
 ```
@@ -70,9 +88,9 @@ Notes:
 
 ## Tasks / TODO
 
+- [x] Slice to `Sprite`s based on config (grid-based)
 - [ ] Create `CharacterSpriteImporter` editor script (skeleton)
 - [ ] Inspector UI for grid size, PPU, pivot, mapping source (inline/JSON)
-- [ ] Slice to `Sprite`s based on config
 - [ ] Generate `AnimationClip`s for named actions (looping, frame rates)
 - [ ] Optional `AnimatorController` generation (states + parameters)
 - [ ] Re-import/overwrite strategy and idempotency
