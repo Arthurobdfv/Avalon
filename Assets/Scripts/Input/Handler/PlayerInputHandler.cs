@@ -42,6 +42,7 @@ public class PlayerInputHandler : MonoBehaviour
     private void HandlePlayerMovement()
     {
         var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
+        _playerCharacter.SetMovement(hasMovementInput ? 1 : 0);
         var characterFacingVector = hasMovementInput
             ? _currentInputState.MoveDirection 
             : LookDirectionFromMousePosition(_currentInputState.LookDirection);

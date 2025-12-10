@@ -62,11 +62,70 @@ public class SpriteSheetParser : AssetPostprocessor
             Debug.Log($"No settings found for {fileName}");
             return;
         }
+
+        Texture2D tex = AssetDatabase.LoadAssetAtPath(assetPath, typeof(Texture2D)) as Texture2D;
+        TextureImporter importer = assetImporter as TextureImporter;
+        int textureHeight;
+        FixTextureSize(tex, importer, out textureHeight);
+
         var textureImporter = (TextureImporter)assetImporter;
+        textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
         textureImporter.spriteImportMode = SpriteImportMode.Multiple;
-        textureImporter.filterMode = FilterMode.Point;
+        textureImporter.filterMode = FilterMode.Trilinear;
         textureImporter.textureType = TextureImporterType.Sprite;
         textureImporter.spritePixelsPerUnit = 50;
-        textureImporter.mipmapEnabled = false;
+        importer.SaveAndReimport();
+    }
+
+    static int[] textureSizes = new int[] {
+        32,
+        64,
+        128,
+        256,
+        512,
+        1024,
+        2048,
+        4096
+    };
+
+    void FixTextureSize(Texture2D tex, TextureImporter importer, out int textureRealHeigh)
+    {
+        int width, height, max;
+        GetImageSize(assetPath, out width, out height);
+        textureRealHeigh = height;
+        max = Mathf.Max(width, height);
+        int size = 1024; //Default size
+        for (int i = 0; i < textureSizes.Length; i++)
+        {
+            if (textureSizes[i] >= max)
+            {
+                size = textureSizes[i];
+                break;
+            }
+        }
+        importer.maxTextureSize = size;
+    }
+
+    private static bool GetImageSize(string assetPath, out int width, out int height)
+    {
+        SpriteDataProviderFactories dataProviderFactories = new SpriteDataProviderFactories();
+
+        dataProviderFactories.Init();
+
+        ISpriteEditorDataProvider importer = dataProviderFactories.GetSpriteEditorDataProviderFromObject(AssetImporter.GetAtPath(assetPath));
+
+        if (importer != null)
+        {
+            importer.InitSpriteEditorDataProvider();
+
+            ITextureDataProvider textureDataProvider = importer.GetDataProvider<ITextureDataProvider>();
+
+            textureDataProvider.GetTextureActualWidthAndHeight(out width, out height);
+
+            return true;
+        }
+
+        width = height = 0;
+        return true;
     }
 }

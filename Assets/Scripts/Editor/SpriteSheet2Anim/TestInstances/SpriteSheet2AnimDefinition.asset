@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93e6f5c6e50da3f4fb3bcc3365a654dd, type: 3}
   m_Name: SpriteSheet2AnimDefinition
   m_EditorClassIdentifier: 
-  <AnimationSets>k__BackingField: []
+  <CharacterName>k__BackingField: SampleCharacter
+  <SpriteSheetAnimationDescriptors>k__BackingField:
+  - {fileID: 11400000, guid: f13bab90b48cd1a4189124bf669f7585, type: 2}
+  - {fileID: 11400000, guid: 36ad3c73fc34e824dbc6c02c96e5b3af, type: 2}
+  - {fileID: 11400000, guid: 702eb879acfbb2441a2b3a3e1743344e, type: 2}
   <SpriteSheet>k__BackingField: {fileID: 11400000, guid: fb4400a60f051634fb006eded9bb8bd1, type: 2}
   <CharacterAssetDefinition>k__BackingField: {fileID: 11400000, guid: f8a4e5808ef48114b8478f87bf3e1323, type: 2}
