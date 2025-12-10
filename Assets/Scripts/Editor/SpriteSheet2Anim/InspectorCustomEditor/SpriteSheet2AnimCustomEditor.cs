@@ -16,7 +16,7 @@ public class SpriteSheet2AnimCustomEditor : Editor
 
     public static Dictionary<string, SpriteSheetDefinition> SpriteSheetDefinitionsLookup = new();
 
-    string basePath = Application.dataPath;
+    readonly string basePath = Application.dataPath;
     string FullPath => Path.GetFullPath(Path.Combine(basePath, Target.CharacterAssetDefinition?.CharacterAssetPath));
 
     SpriteSheet2AnimDefinition Target => target as SpriteSheet2AnimDefinition;
@@ -197,7 +197,7 @@ public class SpriteSheet2AnimCustomEditor : Editor
 
     }
 
-    // TODO: Currntly tied up with Avalon specific animation transitions, the idea is turn this into an extensible system
+    // TODO: Currently tied up with Avalon specific animation transitions, the idea is turn this into an extensible system
     private void CreateAvalonAnimatorTransitions(AnimatorController controller)
     {
         if (controller.parameters.FirstOrDefault(x => x.name == "Movement") == null)
@@ -205,9 +205,9 @@ public class SpriteSheet2AnimCustomEditor : Editor
             controller.AddParameter("Movement", AnimatorControllerParameterType.Int);
         }
         var states = controller.layers[0].stateMachine.states;
-        var walkAnim = controller.layers[0].stateMachine.states.FirstOrDefault(x => x.state.name == "Walk").state;
-        var idleAnim = controller.layers[0].stateMachine.states.FirstOrDefault(x => x.state.name == "Idle").state;
-        var runningAnim = controller.layers[0].stateMachine.states.FirstOrDefault(x => x.state.name == "Running").state;
+        var walkAnim = states.FirstOrDefault(x => x.state.name == "Walk").state;
+        var idleAnim = states.FirstOrDefault(x => x.state.name == "Idle").state;
+        var runningAnim = states.FirstOrDefault(x => x.state.name == "Running").state;
 
 
         // Walk Transitions
@@ -217,24 +217,24 @@ public class SpriteSheet2AnimCustomEditor : Editor
 
         controller.layers[0].stateMachine.defaultState = idleAnim;
 
-        if(!walkTransitions.Any(x => x.destinationState) == runningAnim)
+        if(!walkTransitions.Any(x => x.destinationState == runningAnim))
         {
             var walk2Run = walkAnim?.AddTransition(runningAnim, false);
             walk2Run?.AddCondition(AnimatorConditionMode.Equals, 2, "Movement");
         }
-        if(!runningTransitions.Any(x => x.destinationState) == walkAnim)
+        if(!runningTransitions.Any(x => x.destinationState == walkAnim))
         {
             var run2Walk = runningAnim?.AddTransition(walkAnim, false);
             run2Walk?.AddCondition(AnimatorConditionMode.Less, 2, "Movement");
         }
 
         // Idle Transitions
-        if(!idleTransitions.Any(x => x.destinationState) == walkAnim)
+        if(!idleTransitions.Any(x => x.destinationState == walkAnim))
         {
             var idle2Walk = idleAnim?.AddTransition(walkAnim, false);
             idle2Walk?.AddCondition(AnimatorConditionMode.Greater, 0, "Movement");
         }
-        if(!walkTransitions.Any(x => x.destinationState) == idleAnim)
+        if(!walkTransitions.Any(x => x.destinationState == idleAnim))
         {
             var walk2Idle = walkAnim?.AddTransition(idleAnim, false);
             walk2Idle?.AddCondition(AnimatorConditionMode.Equals, 0, "Movement");

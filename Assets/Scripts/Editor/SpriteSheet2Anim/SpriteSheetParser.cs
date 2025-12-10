@@ -38,8 +38,6 @@ public class SpriteSheetParser : AssetPostprocessor
 
             name = $"{fileName}_{i}"
         }).ToList();
-        var spriteMetadata = new List<SpriteMetaData>();
-        var filename = Path.GetFileNameWithoutExtension(assetPath);
 
         var importer = assetImporter as TextureImporter;
         var factory = new SpriteDataProviderFactories();
@@ -77,7 +75,7 @@ public class SpriteSheetParser : AssetPostprocessor
         importer.SaveAndReimport();
     }
 
-    static int[] textureSizes = new int[] {
+    static readonly int[] textureSizes = new int[] {
         32,
         64,
         128,
