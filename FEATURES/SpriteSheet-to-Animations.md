@@ -1,65 +1,46 @@
 # SpriteSheet to Animations Pipeline
 
-- Status: In Progress
-- Summary: Editor tooling/importer that prepares sprite sheet assets into sliced sprites and generated `AnimationClip`s and optional `AnimatorController` states for each character.
+- Status: In Progress (slicing implemented, animator-controller transitions prototype added)
+- Summary: Editor tooling/importer that slices sprite sheet assets into `Sprite`s and will generate `AnimationClip`s and an optional `AnimatorController` for characters. Current work includes a prototype to wire animator transitions for this project's conventions; this prototype needs generalization and UI.
 
 ## Motivation
 
-Hand-authoring clips for every new character is slow and error-prone. This pipeline automates the import of character sprite sheets (spritemaps), producing consistent clips and animator setups, with configurable mappings for different art packs.
+Automate repetitive and error-prone manual creation of animation clips and controllers from character sprite sheets, producing consistent outputs and a repeatable import workflow.
 
 ## Scope
 
 - Unity Editor-only workflow to slice textures into `Sprite`s
 - Generate `AnimationClip`s for named actions (idle, walk, attack, etc.)
 - Optional generation/wiring of an `AnimatorController` and states
-- Re-import support when mappings/settings change
+- Re-import support when mappings or settings change
 
 Out of scope (for now):
 - Runtime loading from external locations
-- Complex state machines beyond a basic directional locomotion set
+- Complex, user-authored state machines (these will be supported later via configuration)
 
-## Requirements / Acceptance Criteria
+## Current implementation (what's actually in the repo)
 
-- Import configuration options:
-  - Slice grid size (columns/rows) or explicit frame rectangles
-  - Frame order mapping (left-to-right, top-to-bottom, or custom via JSON)
-  - Named animation ranges (e.g., Idle: frames 0–3, Walk: frames 4–11)
-  - Import settings (Pixels Per Unit, pivot, filter mode)
-- Creates `AnimationClip` assets for each named action and optional `AnimatorController` with states and transitions
-- Supports input files: single PNG spritemap + optional JSON mapping file (matched by name)
-- Safe defaults and re-import flow to overwrite generated clips when mappings change
+- Location: `Assets/Scripts/Editor/SpriteSheet2Anim/`
+- Slicing and import adjustments:
+  - Implemented in `SpriteSheetParser` (an `AssetPostprocessor`) which:
+    - On preprocess: sets import properties (e.g., `textureCompression = Uncompressed`, `spriteImportMode = Multiple`, `filterMode = Trilinear`, `textureType = Sprite`, `spritePixelsPerUnit = 50`) and reimports the texture.
+    - On postprocess: reads per-asset settings from `SpriteSheet2AnimCustomEditor.SpriteSheetDefinitionsLookup`, computes grid rectangles using `InternalSpriteUtility.GenerateGridSpriteRectangles`, orders rectangles by Y(desc) then X to produce consistent frame ordering, and applies `SpriteRect[]` via `SpriteDataProviderFactories` / the sprite editor data provider.
+  - `OnPostprocessSprites` exists but currently only logs sprite counts; mapping to clips is not yet implemented.
+- Data model changes:
+  - `CharacterName` field was moved into `AnimationSetDefinition` (so character-level metadata is kept with the animation set).
+- Animator controller generation:
+  - A prototype exists that generates animator transitions and wires them into a controller following the project's current conventions (Avalon-specific). This is a temporary implementation intended to be made configurable and generalized in following work.
 
-## Proposed Implementation
+## What is not implemented yet (and should be tracked)
 
-- Location: `Assets/Editor/Importers/CharacterSpriteImporter.cs`
-- Options storage: `ScriptableObject` or importer serialized fields; optional sidecar JSON per asset
-- Workflow:
-  1. Add a PNG spritemap and optional JSON mapping (e.g., `hero_spritemap.png`, `hero_spritemap.json`).
-  2. Select the texture and configure importer options in the Inspector, or choose a custom "Reimport with Character Importer" menu.
-  3. Importer slices texture into `Sprite`s, creates `AnimationClip`s per action, and optionally generates an `AnimatorController` (+ states) and saves assets under a predictable folder structure.
-- Directional animations:
-  - Support 4/8-direction sets consistent with `DirectionEnum` used at runtime
-  - Naming convention examples: `walk_up`, `walk_down`, `walk_left`, `walk_right`, etc.
+- Automatic creation of `AnimationClip` assets from sliced sprites and named action ranges
+- Mapping from sliced sprites to named animations (OnPostprocessSprites ? clip generation)
+- UI/inspector to edit mapping rules (grid size, PPU, pivot, frame ranges, JSON import)
+- Generalized animator transition rules and exposed configuration (current transitions are hardcoded/prototype)
+- Preview window for slice/clip verification
+- Idempotent re-import behavior for generated assets (overwrite strategy, safe re-import)
 
-## Progress update — Step 1: SpriteSheet splitting
-
-- Status: Implemented (initial)
-- Relevant paths:
-  - `Assets/Scripts/Editor/SpriteSheet2Anim/SpriteSheetParser.cs`
-  - `Assets/Scripts/Editor/SpriteSheet2Anim/InspectorCustomEditor/SpriteSheet2AnimCustomEditor.cs`
-  - `Assets/Scripts/Editor/SpriteSheet2Anim/Models/`
-  - `Assets/Sprites/Characters/` (updated `.png.meta` files reflect multiple-sprite slicing)
-- Summary of implementation:
-  - Uses an `AssetPostprocessor` (`SpriteSheetParser`) to configure sprite import and slice textures into a grid of sprites.
-  - `OnPreprocessTexture` sets `SpriteImportMode.Multiple`, `FilterMode.Point`, `TextureImporterType.Sprite`, `spritePixelsPerUnit = 50`, and disables mipmaps.
-  - `OnPostprocessTexture` reads per-asset settings from `SpriteSheet2AnimCustomEditor.SpriteSheetDefinitionsLookup` and calls `InternalSpriteUtility.GenerateGridSpriteRectangles(texture, ...)` using `SpriteWidth`/`SpriteHeight`.
-  - Rectangles are ordered by Y (desc) then X to produce a consistent frame order; sprite rects are named `<file>_<index>`.
-  - Uses `SpriteDataProviderFactories`/`SpriteEditorDataProvider` to set the generated `SpriteRect[]` and apply them to the importer.
-- Notes:
-  - `OnPostprocessSprites` is wired for future use (e.g., mapping sprites to animation sets) and currently logs the sprite count when settings exist.
-  - Meta changes observed under `Assets/Sprites/Characters/Female_Musketeer/` indicate slicing is active.
-
-## Example JSON mapping (optional)
+## Example JSON mapping (for future sidecar mappings)
 
 ```
 {
@@ -73,31 +54,31 @@ Out of scope (for now):
 ```
 
 Notes:
-- Allow explicit rectangle lists when frames are uneven or contain blanks
-- Provide a simple preview during import to validate slices
+- Allow explicit rectangle lists when frames are uneven or contain blanks.
+- The JSON shape above is a suggested sidecar format; the implementation should validate fields and provide clear error messages.
 
-## Output Layout (suggested)
+## Output layout (suggested)
 
 - `Assets/Animations/Characters/<CharacterName>/` for generated clips
 - `Assets/Animations/Controllers/<CharacterName>.controller` when controller generation is enabled
 
-## Integration Notes
+## Integration notes
 
-- At runtime, `CharacterAnimationHandler` reads direction and updates animator params. The importer should standardize clip names/parameters so handlers remain generic.
-- Keep import-time names and folder structure stable to avoid breaking references.
+- `CharacterAnimationHandler` and runtime code expect consistent clip names and animator parameters. Keep naming stable or provide a mapping layer in the importer.
+- Validate generated controllers in-editor after import; the current prototype follows Avalon conventions and should be reviewed before wider use.
 
-## Tasks / TODO
+## Tasks / TODO (updated)
 
-- [x] Slice to `Sprite`s based on config (grid-based)
-- [ ] Create `CharacterSpriteImporter` editor script (skeleton)
-- [ ] Inspector UI for grid size, PPU, pivot, mapping source (inline/JSON)
-- [ ] Generate `AnimationClip`s for named actions (looping, frame rates)
-- [ ] Optional `AnimatorController` generation (states + parameters)
-- [ ] Re-import/overwrite strategy and idempotency
-- [ ] Minimal preview window for slices
+- [x] Slice to `Sprite`s based on grid config (implemented)
+- [ ] Implement automatic generation of `AnimationClip` assets from frame ranges
+- [ ] Implement mapping logic to convert sliced sprites into named animations (hook up in `OnPostprocessSprites`)
+- [ ] Expose inspector UI for grid size, PPU, pivot, mapping source (inline/JSON)
+- [ ] Generalize animator-controller generation and expose transition rules (current prototype is Avalon-specific)
+- [ ] Re-import/overwrite strategy and idempotency improvements
+- [ ] Minimal preview window for slices and generated clips
 - [ ] Sample JSON mappings and documentation
 
-## Risks / Open Questions
+## Risks / Open questions
 
-- Different art packs may use inconsistent frame orders and sizes — mitigated via JSON mapping and explicit rectangles
-- Clip naming conventions vs. animator parameter names — document and enforce via importer defaults
+- Art packs with inconsistent frame sizes/order will require either explicit rectangle lists or robust JSON mappings; include validation and helpful error messages.
+- Decide and document canonical clip naming and animator parameter conventions so runtime handlers remain generic.
