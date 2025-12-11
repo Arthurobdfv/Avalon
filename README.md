@@ -12,18 +12,20 @@ This project serves as:
 ## Status
 🚧 Prototype/Work in Progress
 
-Project progress & feature tracker: [FEATURES.md](FEATURES.md)
+Project progress & feature tracker: `FEATURES/FEATURES.md`
 
 ## Project Progress
 
-Check the `FEATURES.md` for full details. Quick summary:
+Check the `FEATURES/FEATURES.md` for full details. Quick summary:
 
 - **Features:**
-	- [x] [Character Animation](FEATURES/Character-Animation.md) — base spritemap imported; example animations created
-	- [x] [Character Movement](FEATURES/Character-Movement.md) — player movement and input integrated; server-tick sync
-	- [ ] [SpriteSheet to Animations Pipeline](FEATURES/SpriteSheet-to-Animations.md) — planned: automatic slicing and animation clip generation
+  - [SpriteSheet to Animations Pipeline](FEATURES/SpriteSheet-to-Animations.md) — in progress; slicing implemented and animator-transition prototype added
 
-- **How to contribute:** update `FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` and link it here.
+- **Documentation:**
+  - Changelog: `CHANGELOG.md`
+  - Feature index: `FEATURES/FEATURES.md`
+
+- **How to contribute:** update `FEATURES/FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` and link it here. Update `CHANGELOG.md` under `Unreleased` when making notable changes.
 
 ## Credits
 ### Assets

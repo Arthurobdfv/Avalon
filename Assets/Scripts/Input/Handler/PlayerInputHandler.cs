@@ -103,7 +103,6 @@ public class PlayerInputHandler : MonoBehaviour
         {
             angle = (360f + angle) % 360;
         }
-        Debug.Log($"Angle calculated: {angle}");    
 
         if (DirectionWithUpperBandMapping.Count == 0)
         {
