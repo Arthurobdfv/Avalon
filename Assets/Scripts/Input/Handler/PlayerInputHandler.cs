@@ -14,6 +14,7 @@ public class PlayerInputHandler : MonoBehaviour
         public Vector2 LookDirection = Vector2.zero;
         public Vector2 MoveDirection = Vector2.zero;
         public bool AttackAction = false;
+        public bool SprintAction = false;
     }
 
 
@@ -42,6 +43,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void HandlePlayerMovement()
     {
         var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
+        var isSprinting = _currentInputState.SprintAction && hasMovementInput;
+        _playerCharacter.SetMovement(hasMovementInput ? isSprinting ? 2 : 1 : 0);
         var characterFacingVector = hasMovementInput
             ? _currentInputState.MoveDirection 
             : LookDirectionFromMousePosition(_currentInputState.LookDirection);
@@ -50,7 +53,7 @@ public class PlayerInputHandler : MonoBehaviour
         if (hasMovementInput)
         {
             // TODO: Replace hardcoded speed with character speed attribute
-            _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection * 3 * Time.fixedDeltaTime;
+            _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection.normalized * (3 + (isSprinting ? 1 : 0) * 3)  * Time.fixedDeltaTime;
         }
     }
 
@@ -63,7 +66,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     // Creating a Stateful Input Handler for Player Character already thinking on having multiplayer in future
     // Sets up the last input received for the player character to be able to handle on the next server tick
-    private void HandleMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool attackAction)
+    private void HandleMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool sprintAction)
     {
         if (lookDirection != Vector2.zero)
         {
@@ -74,8 +77,8 @@ public class PlayerInputHandler : MonoBehaviour
         {
             GetCurrentInputState().MoveDirection = moveDirection;
         }
-
-        GetCurrentInputState().AttackAction = attackAction;
+        GetCurrentInputState().SprintAction = sprintAction;
+        // GetCurrentInputState().AttackAction = attackAction;
     }
 
     private PlayerInputState GetCurrentInputState()

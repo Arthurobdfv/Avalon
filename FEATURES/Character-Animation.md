@@ -32,7 +32,7 @@ Developer notes
 
 - Next work item: implement a sprite-sheet parser that automatically slices character spritemaps and generates `AnimationClip` assets and an optional `AnimatorController` (see the Custom Asset Importer section below for details).
 
-## Custom Asset Importer (Planned)
+## Custom Asset Importer (moved ? see: [SpriteSheet to Animations Pipeline](SpriteSheet-to-Animations.md))
 
 This importer will run in the Unity Editor and convert a provided spritemap into sliced sprites and generated `AnimationClip`s and Animator setups.
 
@@ -85,3 +85,4 @@ This importer will run in the Unity Editor and convert a provided spritemap into
 ---
 
 When you're ready I can scaffold the importer script and a minimal UI that reads the example JSON format above.
+

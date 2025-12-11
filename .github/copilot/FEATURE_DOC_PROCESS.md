@@ -14,6 +14,38 @@ Quick checklist (summary)
 - Update `README.md` (Project Progress quick list) if desired
 - Commit, push, and open PR
 
+Creating a new feature doc (step-by-step)
+The steps below reflect the exact process used for the "SpriteSheet to Animations Pipeline" feature.
+
+1) Identify feature name and slug
+- Use a short, hyphenated file name: `FEATURES/<Feature-Name>.md` (e.g., `SpriteSheet-to-Animations.md`).
+
+2) Create the feature doc under `FEATURES/`
+- Start from the templates below. For technical/editor tooling, prefer the "Extended technical feature template".
+
+3) Update `FEATURES.md`
+- In the Todo list, add a new entry linking to the feature doc (or replace any older placeholder pointing elsewhere).
+- In the Details section, add or rename a subsection to match the new feature name and link to the doc. Example performed:
+  - Replaced the "Custom Asset Importer" details with "SpriteSheet to Animations Pipeline" and added a Docs link.
+
+4) Update related feature docs (if content moved)
+- If details were previously nested under another feature, add a short note pointing to the new page. Example performed:
+  - In `FEATURES/Character-Animation.md`, added a note: "Custom Asset Importer (moved → see: [SpriteSheet to Animations Pipeline](SpriteSheet-to-Animations.md))".
+
+5) Update `README.md`
+- Adjust the Project Progress quick list to link to the new feature doc.
+
+6) Commit changes
+- Use clear messages. Example messages used:
+  - `docs: add SpriteSheet-to-Animations feature doc and link from FEATURES list; point Character-Animation doc to new page`
+  - `docs: update README to link to SpriteSheet-to-Animations feature page`
+  - `docs: index now links to SpriteSheet-to-Animations and details section updated`
+- PowerShell tip: Use `;` or separate commands instead of `&&`:
+  - `git add FEATURES/... ; git commit -m "docs: ..."`
+
+7) Push and open PR
+- Title should reflect the feature and that it updates docs. Link related issues/PRs.
+
 Commands used (PowerShell) — copy/paste
 
 1) Inspect recent commits with filenames and concise metadata (used to find what changed):
@@ -67,6 +99,46 @@ Developer notes
 
 ````
 
+Extended technical feature template (used for SpriteSheet-to-Animations)
+
+````markdown
+# <Feature Name>
+
+- Status: Planned / In Progress / Implemented
+- Summary: What the tooling/system does in one sentence.
+
+## Motivation
+Why this is needed (speed, reliability, consistency, etc.).
+
+## Scope
+- In-scope bullets
+- Out-of-scope bullets
+
+## Requirements / Acceptance Criteria
+- List concrete requirements and acceptance bullets
+
+## Proposed Implementation
+- Where the code lives
+- Storage/config options
+- Typical workflow steps
+- Naming/structural conventions
+
+## Example Mapping/Config (if applicable)
+Code block samples (JSON, YAML, etc.)
+
+## Output Layout (suggested)
+- Where generated assets/files go
+
+## Integration Notes
+- How runtime systems consume outputs
+
+## Tasks / TODO
+- [ ] Task list
+
+## Risks / Open Questions
+- Risks and mitigations
+````
+
 How I convert commits -> release notes (recommended approach)
 - Read recent commit subjects and filenames; group related changes (e.g., multiple animation clips added) into a single bullet.
 - Avoid pasting raw commit hashes or full messages in the release notes; instead write a plain-English summary describing the effect (what changed and why it matters).
@@ -86,11 +158,16 @@ Commit & PR guidance
   - `feat(animation): add eight-directional walk clips (docs updated)`
 - Push and open a PR describing the feature change and link to the issue or the commit set if relevant.
 
-Example: workflow for the Character Animation + Movement update
-- Run the `git log` command above and inspect files added/modified under `Assets/Animations/` and `Assets/Scripts/Character/`.
-- Use `Select-String` to collect TODOs. Note them in the Developer notes section of the new feature doc.
-- Write release notes describing: "Added eight-directional walk animation clips, introduced CharacterAnimationHandler to coordinate animation states, and updated the sample scene to use new clips." — do not paste the commit message literally.
-- Add TODO checkbox for the sprite-sheet parser under the feature doc and link it from `FEATURES.md` and `README.md`.
+Example: SpriteSheet to Animations Pipeline update
+- Create `FEATURES/SpriteSheet-to-Animations.md` using the extended template.
+- Update `FEATURES.md`:
+  - Add a Todo entry linking to the new page.
+  - Rename the Details subsection to "SpriteSheet to Animations Pipeline" and add a Docs link.
+- In `FEATURES/Character-Animation.md`, add a moved note pointing to the new page.
+- Update `README.md` Project Progress to link to the new page.
+- Commit with messages like:
+  - `docs: add SpriteSheet-to-Animations feature doc and link from FEATURES list; point Character-Animation doc to new page`
+  - `docs: update README to link to SpriteSheet-to-Animations feature page`
 
 Automation notes (optional)
 - You can automate parts of this with a small script:
