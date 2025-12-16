@@ -27,4 +27,15 @@ public class PlayerEntitiesManager : MonoBehaviour
         _playersByMap.Add(Constants.InitialMap, players.ToList());
         Debug.Log($"[PlayerEntitiesManager] Found {_playersByMap[Constants.InitialMap].Count} players on map {Constants.InitialMap}");
     }
-}
+
+    // TODO: PlaceholderMethod to "Locate" and handle player
+    public void HandlePlayerInteract(PlayerCharacter character)
+    {
+        var enemy = EnemyBehaviourManager.FindClosestEnemy(character.transform.position, Constants.InitialMap);
+        if(enemy != null)
+        {
+            Debug.Log($"Assigning target {enemy.name} to player {character.name}");
+            character.SetTarget(enemy);
+        }
+    }
+ }

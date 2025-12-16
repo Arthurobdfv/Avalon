@@ -1,15 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 // Centralized manager for enemy behaviors, planning on a Multiplayer RPG context
 public class EnemyBehaviourManager : MonoBehaviour
 {
-    Dictionary<string, List<EnemyCharacter>> _enemiesByMap = new Dictionary<string, List<EnemyCharacter>>()
+    static Dictionary<string, List<EnemyCharacter>> _enemiesByMap = new Dictionary<string, List<EnemyCharacter>>()
     {
         { Constants.InitialMap, new List<EnemyCharacter>() }
     };
+
+    public static List<EnemyCharacter> EnemiesOnMap(string map)
+    {
+        if (_enemiesByMap.TryGetValue(map, out var enemies))
+        {
+            return enemies;
+        }
+        return new List<EnemyCharacter>();
+    }
 
     [SerializeField] int TicksPerRefreshQuery = 20;
     int _currentTick = 0;
@@ -58,7 +69,7 @@ public class EnemyBehaviourManager : MonoBehaviour
                 Debug.Log($"[EnemyBehaviourManager] Enemy {enemy.name} is searching for targets.");
                 var closestPlayer = playersOnMap.Where(playersOnMap => IsInRange(enemy, playersOnMap, enemy.Behavior.Range))
                     // TODO: Improve target selection logic, possibly sending a list of candidates to a decision-making AI module
-                    .Aggregate((p1, p2) => (enemy.transform.position - p1.transform.position).sqrMagnitude < (enemy.transform.position - p2.transform.position).sqrMagnitude ? p1 : p2);
+                    .ClosestTo(enemy.transform.position);
                 if (closestPlayer != null)
                 {
                     Debug.Log($"[EnemyBehaviourManager] Enemy {enemy.name} has found target {closestPlayer.name}.");
@@ -82,5 +93,16 @@ public class EnemyBehaviourManager : MonoBehaviour
     {
         float distance = Vector3.SqrMagnitude(source.transform.position - target.transform.position);
         return distance <= (range * range);
+    }
+
+    // TODO: Need to improve and convert the multiple parameters into a EnemyQuery structure.
+    public static EnemyCharacter FindClosestEnemy(Vector3 position, string mapId, Predicate<EnemyCharacter>? predicate = null)
+    {
+        IEnumerable<EnemyCharacter> enemies = EnemiesOnMap(mapId);
+        if(predicate != null)
+        {
+            enemies = enemies.Where(x => predicate(x));
+        }
+        return enemies.ClosestTo(position);
     }
 }

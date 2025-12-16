@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class EnemyCharacter : Character
+public class EnemyCharacter : CombatCharacter
 {
     // TODO: Move this to a new file, currently hardcoded few values for testing
     [Serializable]
@@ -13,13 +13,13 @@ public class EnemyCharacter : Character
         float RangedRange = 15f;
         [SerializeField] public float Range => Ranged ? RangedRange : MeleeRange;
     }
-    public Character Target { get; protected set; } 
     public EnemyBehavior Behavior => _behavior;
     [SerializeField] EnemyBehavior _behavior = null;
 
-    public void SetTarget(Character target)
+    private void Start()
     {
-        Target = target;
+        _currentHealth = BaseStats.Health;
+        _currentTime = 0f;
     }
 
     private void OnDrawGizmos()
