@@ -8,6 +8,8 @@ public class PlayerInputHandler : MonoBehaviour
     List<(DirectionEnum direction, float upperBand)> DirectionWithUpperBandMapping = new ();
     private PlayerInputState _currentInputState = null;
 
+    [SerializeField] private PlayerEntitiesManager _playerManager;
+
     // TODO: Refactor into a different file
     class PlayerInputState
     {
@@ -15,19 +17,25 @@ public class PlayerInputHandler : MonoBehaviour
         public Vector2 MoveDirection = Vector2.zero;
         public bool AttackAction = false;
         public bool SprintAction = false;
+        public bool InteractAction = false;
     }
 
 
     // Start is called before the first frame update
     void OnEnable()
     {
+        if (_playerManager == null)
+        {
+            _playerManager = FindFirstObjectByType<PlayerEntitiesManager>();
+        }
         PlayerInputMapper.OnSendMoveInput += HandleMoveInput;
+        PlayerInputMapper.OnSentInteractInput += HandleInteractInput;
     }
-
 
     private void OnDisable()
     {
         PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
+        PlayerInputMapper.OnSentInteractInput -= HandleInteractInput;
     }
 
 
@@ -36,8 +44,19 @@ public class PlayerInputHandler : MonoBehaviour
         if (_currentInputState != null)
         {
             HandlePlayerMovement();
+            HandlePlayerInteraction();
             _currentInputState = null;
         }
+    }
+
+    private void HandlePlayerInteraction()
+    {
+        if (!_currentInputState.InteractAction)
+        {
+            return;
+        }
+        // Look for the closest enemy and start combat
+        _playerManager.HandlePlayerInteract(_playerCharacter);
     }
 
     private void HandlePlayerMovement()
@@ -81,6 +100,11 @@ public class PlayerInputHandler : MonoBehaviour
         // GetCurrentInputState().AttackAction = attackAction;
     }
 
+    private void HandleInteractInput()
+    {
+        GetCurrentInputState().InteractAction = true;
+    }
+
     private PlayerInputState GetCurrentInputState()
     {
         if( _currentInputState == null)
@@ -90,7 +114,7 @@ public class PlayerInputHandler : MonoBehaviour
         return _currentInputState;
     }
 
-    private DirectionEnum Vector2DirectionEnum(Vector2 direction)
+    protected DirectionEnum Vector2DirectionEnum(Vector2 direction)
     {
         if (direction == Vector2.zero)
             return DirectionEnum.DIRECTION_NONE;
@@ -103,7 +127,6 @@ public class PlayerInputHandler : MonoBehaviour
         {
             angle = (360f + angle) % 360;
         }
-        Debug.Log($"Angle calculated: {angle}");    
 
         if (DirectionWithUpperBandMapping.Count == 0)
         {

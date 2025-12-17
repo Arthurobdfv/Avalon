@@ -67,6 +67,11 @@ Notes:
 - `CharacterAnimationHandler` and runtime code expect consistent clip names and animator parameters. Keep naming stable or provide a mapping layer in the importer.
 - Validate generated controllers in-editor after import; the current prototype follows Avalon conventions and should be reviewed before wider use.
 
+## Related documentation
+
+- Root changelog: `../CHANGELOG.md`
+- Project README: `../README.md`
+
 ## Tasks / TODO (updated)
 
 - [x] Slice to `Sprite`s based on grid config (implemented)

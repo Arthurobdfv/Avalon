@@ -24,9 +24,14 @@ public class PlayerInputMapper : MonoBehaviour
         Vector2 lookDirection = _lookAction.ReadValue<Vector2>();
         bool sprinting = _sprintAction.IsPressed();
         bool attackAction = _attackAction.ReadValue<float>() > 0;
-        OnSendMoveInput?.Invoke(lookDirection, moveDirection, sprinting );
+        OnSendMoveInput?.Invoke(lookDirection, moveDirection, sprinting);
+        bool interacting = _interact.IsPressed();
+        if (interacting)
+            OnSentInteractInput?.Invoke();
     }
 
     public delegate void SendMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool sprinting);
     public static event SendMoveInput OnSendMoveInput;
+    public delegate void SendInteractInput();
+    public static event SendInteractInput OnSentInteractInput;
 }

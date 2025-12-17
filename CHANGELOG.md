@@ -1,0 +1,36 @@
+# Changelog
+
+All notable changes to this repository will be documented in this file.
+
+## Unreleased
+
+### Features & Updates
+
+- SpriteSheet ? Animations
+  - Moved `CharacterName` field into `AnimationSetDefinition` for better model locality and usability.
+  - Cleanup and fixes in the sprite-sheet parsing pipeline (`SpriteSheetParser` and editor integration).
+  - Prototype implementation for generating animator transitions and wiring a generated `AnimatorController` with project-specific conventions (Avalon). This is a temporary approach and will be made configurable in a follow-up.
+  - Updated importer defaults in `SpriteSheetParser`: `textureCompression = Uncompressed`, `spriteImportMode = Multiple`, `filterMode = Trilinear`, `textureType = Sprite`, `spritePixelsPerUnit = 50`.
+
+- Enemy behavior
+  - Added/updated `EnemyBehaviourManager` to centralize enemy AI behavior refresh and basic target selection:
+    - Tick-based refresh (`TicksPerRefreshQuery`) to limit CPU usage.
+    - Basic aggressive targeting: selects closest player within a given range and assigns as target.
+    - Utility range-check helper (`IsInRange`).
+    - Notes and TODOs left in code for multi-map support, improved selection logic and target handling.
+
+- Misc
+  - Various small fixes and adjustments across editor scripts and runtime handlers to integrate the above changes.
+
+### Documentation
+
+- Updated `FEATURES/SpriteSheet-to-Animations.md` to reflect the current implementation, status, and remaining work.
+- Added this `CHANGELOG.md` to track Unreleased changes and provide a single place for release notes.
+
+## Notes / Next steps
+
+- Generalize animator transition generation and expose transition rules via an importer UI or external mapping files (JSON).
+- Implement automatic `AnimationClip` generation from sliced sprites and name-to-frame-range mapping.
+- Add a preview window and idempotent re-import strategy for generated assets.
+- Improve enemy targeting logic, multi-map support, and integrate with any server-authoritative decision modules for multiplayer contexts.
+
