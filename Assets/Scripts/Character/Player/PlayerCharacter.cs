@@ -23,7 +23,7 @@ public class PlayerCharacter : CombatCharacter
         {
             if(_currentTime > BaseStats.AttackSpeed)
             {
-                Debug.Log("Attack");
+                OnPerformCombatHandler?.Invoke(new PerformCombatEventArgs { SourceCharacter = this, TargetCharacter = Target });
                 _currentTime = 0f;
             }
         }
