@@ -22,7 +22,7 @@ Pattern
      `FEATURES.md` when appropriate.
 4. Changelog: if `CHANGELOG.md` exists, propose adding an `Unreleased`
    entry and ask the user before adding it.
-5. Feature doc contents: include the following sections: Overview, Key
+5. Feature doc contents: include the following sections � Overview, Key
    changes, Motivation, How to use, Notes/TODO, Files changed.
 6. Commit message: produce a message that follows the repository
    `CONTRIBUTING.md` template (Conventional Commits style, `type(scope):`

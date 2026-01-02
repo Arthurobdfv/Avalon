@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
+using static EntityExtensions;
 
 // Centralized manager for enemy behaviors, planning on a Multiplayer RPG context
 public class EnemyBehaviourManager : MonoBehaviour
@@ -64,10 +65,10 @@ public class EnemyBehaviourManager : MonoBehaviour
     {
         if (enemy.Target == null)
         {
-            if (enemy.Behavior.Aggressive)
+            if (enemy.BaseStats.Aggressive)
             {
                 Debug.Log($"[EnemyBehaviourManager] Enemy {enemy.name} is searching for targets.");
-                var closestPlayer = playersOnMap.Where(playersOnMap => IsInRange(enemy, playersOnMap, enemy.Behavior.Range))
+                var closestPlayer = playersOnMap.Where(player => EntityExtensions.IsInRange<Character>(enemy, player, enemy.BaseStats.VisionRange))
                     // TODO: Improve target selection logic, possibly sending a list of candidates to a decision-making AI module
                     .ClosestTo(enemy.transform.position);
                 if (closestPlayer != null)
@@ -85,14 +86,22 @@ public class EnemyBehaviourManager : MonoBehaviour
         if (enemy.Target != null)
         {
             // TODO: HandleTarget, checking if still in range, patience level, if is marked for destruction, etc.
+            // This needs to be an AI module eventually.
+            if (EntityExtensions.IsInRange(enemy, enemy.Target, enemy.BaseStats.AttackRange))
+            {
+                //enemy.AttackTarget();
+                // Attack logic
+            }
+            else
+            {
+                // Move towards target logic
+            }
         }
-    }
 
-    // TODO: Move these methods to a separate file
-    private bool IsInRange(Character source, Character target, float range)
-    {
-        float distance = Vector3.SqrMagnitude(source.transform.position - target.transform.position);
-        return distance <= (range * range);
+        if (enemy.CurrentHealth <= 0)
+        {
+
+        }
     }
 
     // TODO: Need to improve and convert the multiple parameters into a EnemyQuery structure.
