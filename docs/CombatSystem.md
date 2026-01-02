@@ -16,8 +16,8 @@ Components
 - `CombatCharacter` (inherits `Character`)
   - Holds a `BaseStats` reference and runtime values: `CurrentHealth`, `_currentTime` and `Target`.
   - Exposes events/delegates:
-    - Instance: `OnHealthChangeHandler(HealthChangeEventArgs)` — invoked when `CurrentHealth` changes.
-    - Static: `OnPerformCombatHandler(PerformCombatEventArgs)` — invoked when a character performs an attack.
+    - Instance: `OnHealthChangeHandler(HealthChangeEventArgs)` - invoked when `CurrentHealth` changes.
+    - Static: `OnPerformCombatHandler(PerformCombatEventArgs)` - invoked when a character performs an attack.
   - Logic:
     - Subscribes to global combat ticks via `CombatManager.CombatTickHandler`.
     - On each tick it accumulates `delta` to `_currentTime` and checks for attack readiness.
@@ -36,8 +36,8 @@ Components
   - `EnemyCharacter` exposes `BaseStats` as `EnemyCombatBaseStats`, draws gizmos for ranges, and moves towards the target when out of range using `MovementSpeed`.
 
 Utilities
-- `EntityExtensions.IsInRange<T>(this T source, T target, float range)` — returns whether two characters are within `range` (uses squared magnitude check).
-- `EntityExtensions.ClosestTo<T>` — helper to find the closest entity to a position.
+- `EntityExtensions.IsInRange<T>(this T source, T target, float range)` - returns whether two characters are within `range` (uses squared magnitude check).
+- `EntityExtensions.ClosestTo<T>` - helper to find the closest entity to a position.
 
 Usage
 1. Add `CombatManager` as a component to a persistent GameObject in the scene (e.g., `GameManager`).
@@ -52,9 +52,9 @@ Behavior notes
 - Damage application is currently immediate inside `CombatManager.OnPerformCombat`.
 
 TODOs / Known limitations
-- No explicit death handling besides clearing the target in `OnHealthReachZero()` — hook animation and removal logic.
+- No explicit death handling besides clearing the target in `OnHealthReachZero()` - hook animation and removal logic.
 - Attack resolution is immediate and simple; consider adding hit/impact animations, projectiles, or attack resolution systems.
-- No combat UI or sound behavior wired — subscribe to events to add these features.
+- No combat UI or sound behavior wired - subscribe to events to add these features.
 - Tick system is simple and tied to `FixedUpdate` frequency. Consider decoupling for deterministic simulations or multiplayer.
 
 Files of interest
@@ -98,7 +98,7 @@ New example assets (untracked)
 Behavioral notes (explicit)
 - Attack timing is now driven by the `CombatManager` tick system; `CombatCharacter` accumulates the tick `delta` and performs attacks when the accumulated time exceeds `AttackSpeed`.
 - Damage application is immediate and performed in `CombatManager.OnPerformCombat` via direct subtraction from `CurrentHealth`.
-- Death handling remains minimal: `OnHealthReachZero()` clears `Target` but does not remove the GameObject or play animations — hook this into your death/cleanup flow.
+- Death handling remains minimal: `OnHealthReachZero()` clears `Target` but does not remove the GameObject or play animations - hook this into your death/cleanup flow.
 
 Testing / QA notes
 - To test locally: ensure a `CombatManager` instance is in the scene (attach to a persistent GameObject), assign `BaseStats` to character prefabs, and set `Target` for player/enemy instances. Watch Console for the `[CombatCharacter]` timer logs.
