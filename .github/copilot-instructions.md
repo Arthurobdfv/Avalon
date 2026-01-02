@@ -61,6 +61,8 @@ Updated documentation & workflow rules (clarified)
   - After automation edits: add an "Unstaged / Recent runtime changes" section to the related `docs/` page and append a one-line note to `CHANGELOG.md` under `Unreleased`.
   - Follow `docs/COPILOT_DOCS_DOCUMENTING.md` when creating commit messages or PR descriptions from unstaged changes.
 
+Documentation generation note: avoid inserting non-ASCII or special punctuation characters (for example: smart quotes, em-dashes, non-breaking spaces, and other locale-specific symbols) in generated Markdown files. Prefer ASCII characters and simple punctuation (straight quotes, hyphen-minus `-`, plain spaces). This reduces the risk of encoding errors during static site builds or when tools assume UTF-8 encoding.
+
 Conventions and coding notes
 
 - Follow existing code style. Keep changes minimal and consistent.
