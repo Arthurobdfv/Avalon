@@ -448,6 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c14c31353920b444b9ac32d7863f66f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tickInterval: 8
 --- !u!1 &1163756752
 GameObject:
   m_ObjectHideFlags: 0
@@ -866,6 +867,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4651299612445474404, guid: 8528d27f940aa9c4c81e04ddef475392, type: 3}
+      propertyPath: _baseStats
+      value: 
+      objectReference: {fileID: 11400000, guid: 36acc89efa714d044b007ed6c548302c, type: 2}
     - target: {fileID: 5372512849461645319, guid: 8528d27f940aa9c4c81e04ddef475392, type: 3}
       propertyPath: m_Name
       value: Enemy_Passive
@@ -975,6 +980,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8241435061148624381, guid: 41b76056814a9bb4d8b1508c5b491726, type: 3}
+      propertyPath: _baseStats
+      value: 
+      objectReference: {fileID: 11400000, guid: 7dd0267434a9ece44ad34d0c94626054, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

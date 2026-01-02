@@ -12,16 +12,16 @@ public class PlayerCharacter : CombatCharacter
 
     private void Update()
     {
-        HandleCombat();
-        _currentTime += Time.deltaTime;
+        //HandleCombat();
+        //_currentTime += Time.deltaTime;
     }
 
     // TODO: Possibly have this in a Combat Manager or something... Already thinking on a Multiplayer Context
-    private void HandleCombat()
+    protected override void OnCombatTick(float delta)
     {
-        if(Target != null)
+        if (Target != null)
         {
-            if(_currentTime > BaseStats.AttackSpeed)
+            if (_currentTime > BaseStats.AttackSpeed)
             {
                 OnPerformCombatHandler?.Invoke(new PerformCombatEventArgs { SourceCharacter = this, TargetCharacter = Target });
                 _currentTime = 0f;
