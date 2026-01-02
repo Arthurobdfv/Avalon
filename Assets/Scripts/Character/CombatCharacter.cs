@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CombatCharacter : Character
@@ -13,7 +12,7 @@ public class CombatCharacter : Character
         get => _currentHealth;
         set
         {
-            if (value != _currentHealth)
+            if(value != _currentHealth)
             {
                 var healthChangeEventArgs = new HealthChangeEventArgs
                 {
@@ -39,52 +38,11 @@ public class CombatCharacter : Character
         _currentHealth = BaseStats.Health;
     }
 
-    private void OnEnable()
-    {
-        CombatManager.CombatTickHandler += HandleCombatTick;
-    }
-
-    private void HandleCombatTick(float previousTickTime, float currentTickTime, float delta)
-    {
-        if (Target != null)
-        {
-            _currentTime += delta;
-            Debug.Log($"[CombatCharacter] {_currentTime} / {BaseStats.AttackSpeed}");
-        }
-        OnCombatTick(delta);
-    }
-
-    private void OnDisable()
-    {
-        CombatManager.CombatTickHandler -= HandleCombatTick;
-    }
-
-    protected virtual void OnCombatCharacterEnable() { }
-    protected virtual void OnCombatTick(float delta)
-    {
-        if (Target != null)
-        {
-            if (_currentTime > BaseStats.AttackSpeed && this.IsInRange(Target, BaseStats.AttackRange))
-            {
-                OnPerformCombatHandler?.Invoke(new PerformCombatEventArgs { SourceCharacter = this, TargetCharacter = Target });
-                _currentTime = 0f;
-            }
-        }
-    }
-    protected virtual void OnCombatCharacterDisable() { }
-
     public delegate void OnHealthChange(HealthChangeEventArgs healthChangeEvent);
     public OnHealthChange OnHealthChangeHandler;
 
     public delegate void PerformCombat(PerformCombatEventArgs combatEventArgs);
     public static PerformCombat OnPerformCombatHandler;
-
-    public void OnHealthReachZero()
-    {
-        SetTarget(null);
-        // TODO: Play death animation
-    }
-
     // TODO: Move these to a different file
     public class HealthChangeEventArgs
     {

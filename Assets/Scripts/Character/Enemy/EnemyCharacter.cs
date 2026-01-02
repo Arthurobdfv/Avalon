@@ -3,43 +3,33 @@ using UnityEngine;
 
 public class EnemyCharacter : CombatCharacter
 {
-    public new EnemyCombatBaseStats BaseStats => (EnemyCombatBaseStats)base.BaseStats;
+    // TODO: Move this to a new file, currently hardcoded few values for testing
+    [Serializable]
+    public class EnemyBehavior
+    {
+        [field: SerializeField] public bool Aggressive { get; set; }
+        [field: SerializeField] public bool Ranged { get; set; }
+        float MeleeRange = 5f;
+        float RangedRange = 15f;
+        [SerializeField] public float Range => Ranged ? RangedRange : MeleeRange;
+    }
+    public EnemyBehavior Behavior => _behavior;
+    [SerializeField] EnemyBehavior _behavior = null;
+
     private void Start()
     {
-        _currentHealth = base.BaseStats.Health;
+        _currentHealth = BaseStats.Health;
         _currentTime = 0f;
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = BaseStats.Aggressive ? Color.red : Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, BaseStats.AttackRange);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, BaseStats.VisionRange);
-        if (Target != null)
+        Gizmos.color = Behavior.Aggressive ? Color.red : Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, Behavior.Range);
+        if(Target != null)
         {
             Gizmos.color = Color.white;
             Gizmos.DrawLine(transform.position, Target.transform.position);
-        }
-    }
-
-    protected override void OnCombatTick(float delta)
-    {
-        base.OnCombatTick(delta);
-        if (Target != null)
-        {
-
-        }
-    }
-
-    protected void Update()
-    {
-        if (Target != null)
-        {
-            if (!this.IsInRange(Target, BaseStats.AttackRange))
-            {
-                transform.position = Vector3.MoveTowards(transform.position, Target.transform.position, BaseStats.MovementSpeed * Time.deltaTime);
-            }
         }
     }
 }

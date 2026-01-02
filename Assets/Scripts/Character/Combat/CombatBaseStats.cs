@@ -10,6 +10,4 @@ public class CombatBaseStats : ScriptableObject
     [field: SerializeField] public float Health { get; private set; }
     [field: SerializeField] public float AttackDamage { get; private set; }
     [field: SerializeField] public float AttackSpeed { get; private set; }
-    [field: SerializeField] public float AttackRange { get; private set; }
-    [field: SerializeField] public float MovementSpeed { get; private set; }
 }

@@ -8,7 +8,7 @@ A concise TODO-style list of implemented and planned features. Click an item to 
 
 - [x] [Character Animation](FEATURES/Character-Animation.md) — base spritemap imported; example animations created
 - [x] [Character Movement](FEATURES/Character-Movement.md) — player movement + server-tick sync; input integration
-- [x] [Basic Entity Manager & Combat Flow](docs/feature-basic-entity-manager-and-combat.md) — implemented (basic) (implementation notes: `docs/CombatSystem.md`)
+- [x] [Basic Entity Manager & Combat Flow](docs/feature-basic-entity-manager-and-combat.md) — implemented (basic)
 - [ ] [SpriteSheet to Animations Pipeline](FEATURES/SpriteSheet-to-Animations.md) — automatically slice spritemap and generate animation clips
 - [ ] Build Pipeline - Whenever merging from DEV -> Master, will trigger a GH Actiion to build the project.
 
