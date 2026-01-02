@@ -91,3 +91,4 @@ Files changed
 See also
 
 - `docs/index.md` for a list of documentation pages for this repository.
+- `docs/CombatSystem.md` � implementation reference and usage notes for the combat subsystem.

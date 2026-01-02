@@ -66,7 +66,9 @@ public class PlayerInputHandler : MonoBehaviour
         _playerCharacter.SetMovement(hasMovementInput ? isSprinting ? 2 : 1 : 0);
         var characterFacingVector = hasMovementInput
             ? _currentInputState.MoveDirection 
-            : LookDirectionFromMousePosition(_currentInputState.LookDirection);
+            : _playerCharacter.Target != null ? 
+                LookDirectionFromTargetPosition(_playerCharacter.Target.transform.position) :
+                LookDirectionFromMousePosition(_currentInputState.LookDirection);
         _playerCharacter.SetDirection(Vector2DirectionEnum(characterFacingVector));
 
         if (hasMovementInput)
@@ -74,6 +76,14 @@ public class PlayerInputHandler : MonoBehaviour
             // TODO: Replace hardcoded speed with character speed attribute
             _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection.normalized * (3 + (isSprinting ? 1 : 0) * 3)  * Time.fixedDeltaTime;
         }
+    }
+
+    private Vector2 LookDirectionFromTargetPosition(Vector3 position)
+    {
+        var playerPos = Camera.main.WorldToScreenPoint(_playerCharacter.transform.position);
+        var targetPos = Camera.main.WorldToScreenPoint(position);
+        var lookDirection = (targetPos - playerPos).normalized;
+        return lookDirection;
     }
 
     private Vector2 LookDirectionFromMousePosition(Vector2 mousePosition)
