@@ -69,7 +69,7 @@ Conventions and coding notes
 
 Automation bookkeeping
 
-- Update this file whenever automated repository-wide documentation edits are performed.
+- Update this file whenever Copilot automation performs repository-wide documentation edits.
 - If files listed here are renamed/removed, update this file accordingly.
 
 Action items for maintainers
@@ -81,3 +81,25 @@ Action items for maintainers
 Notes
 
 - This file was updated after scanning the repository for all `*.md` files. It reflects the current set of Markdown documents present in the repository root and `docs/` folder.
+
+# PR Message Requests (automation directive)
+
+When the user asks Copilot to produce a PR message, the automated agent should perform the following and include the results in the response whenever possible:
+
+- Summarize the diff between the source and target branches:
+  - List files added, modified, and removed.
+  - For each changed file (or grouped by area), include a one-line summary of the change (e.g., "Updated combat tick handling in `Assets/Scripts/Character/Combat/CombatManager.cs`").
+  - If available, include the number of commits and a short summary of their intents.
+
+- Produce a conventional PR title and body.
+
+- Provide the PR message inside a Markdown code block (```markdown ... ```), ready for copy/paste into the GitHub UI.
+
+- Optionally include a one-line `CHANGELOG.md` entry under `Unreleased` formatted as a suggested addition.
+
+- If the diff is large or spans unrelated changes, suggest splitting into multiple PRs and explain why briefly.
+
+Notes for automated agents
+
+- Use repository tools (`git` or hosted API) to compute the diff when possible. If the agent cannot access branch diffs, explain why and provide the best possible summary from available information.
+- Keep the PR message concise and focused; include testing steps and files of interest in the PR body.
