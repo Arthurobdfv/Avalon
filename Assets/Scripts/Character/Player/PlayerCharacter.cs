@@ -19,6 +19,7 @@ public class PlayerCharacter : CombatCharacter
     // TODO: Possibly have this in a Combat Manager or something... Already thinking on a Multiplayer Context
     protected override void OnCombatTick(float delta)
     {
+        base.OnCombatTick(delta);
         if (Target != null)
         {
             if (_currentTime > BaseStats.AttackSpeed)

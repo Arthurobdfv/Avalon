@@ -5,6 +5,8 @@ This directory contains design documents and progress trackers for major feature
 Available feature docs:
 
 - SpriteSheet to Animations Pipeline — `FEATURES/SpriteSheet-to-Animations.md`
+- Multiplayer architecture and packet flow - `../docs/MultiplayerArchitecture.md`
+- TextMesh Pro resources - `../docs/TextMeshProResources.md`
 
 How to add a feature document:
 

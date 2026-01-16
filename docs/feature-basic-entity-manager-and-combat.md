@@ -9,7 +9,8 @@ point for player/enemy interactions.
 
 Key changes
 
-- `PlayerEntitiesManager`: centralizes entity registration and lookup.
+- `GlobalEntitiesManager`: centralizes entity registration across maps, spawns players on connect, listens for respawn/despawn, and (when multiplayer is enabled) publishes map-scoped `EntitySpawnPacket` snapshots through `ServerCommunicationLayerManager.SendMap` each `LateUpdate`.
+- `PlayerEntitiesManager`: map-aware helpers for player lookup and simple interaction targeting (find nearest enemy on the player’s map).
 - `EntityExtensions`: helper extensions for common entity operations.
 - `PlayerInputHandler`: captures player input and forwards actions to the
   entity system.
@@ -17,7 +18,7 @@ Key changes
   in `Update`, and triggers timed attacks in `HandleCombat` when a
   `Target` is present.
 - `EnemyBehaviourManager` / `EnemyCharacter`: integrate enemies with the
-  new behavioural and combat flow.
+  combat flow; hooks into `CombatManager.BeforeCombatTickHandler` to refresh targeting per tick using map-aware queries.
 - `CombatCharacter` / `CombatBaseStats`: shared combat properties and
   base stats used by characters.
 - `CombatManager`: a lightweight, event-driven combat coordinator that
@@ -45,8 +46,7 @@ calculation, hit resolution, animations, and network synchronization.
 
 How to use
 
-1. Ensure `PlayerEntitiesManager` is initialized at startup (attach to a
-   scene object or bootstrap from code).
+1. Ensure `GlobalEntitiesManager` and `PlayerEntitiesManager` are initialized at startup (attach to a scene object or bootstrap from code). `GlobalEntitiesManager` maintains the global registry and dispatches map-scoped spawn snapshots in multiplayer.
 2. Hook `PlayerInputHandler` up to the input pipeline so player actions
    reach the entity systems.
 3. Use `PlayerCharacter` and `EnemyCharacter` prefabs to participate in
@@ -72,10 +72,12 @@ Notes and TODOs
 - Consider moving combat responsibilities to a dedicated server-side
   system or a more feature-complete `CombatManager` for authoritative
   multiplayer.
+- Multiplayer: entity replication is currently a periodic snapshot via `EntitySpawnPacket` (per map) from `GlobalEntitiesManager`; input aggregation on the server (`PlayersInputManager`) and authoritative combat are still planned.
 
 Files changed
 
 - `Assets/Scripts/Character/Extensions/EntityExtensions.cs`
+- `Assets/Scripts/Character/EntityManagers/GlobalEntitiesManager.cs`
 - `Assets/Scripts/Character/Player/PlayerEntitiesManager.cs`
 - `Assets/Scripts/Character/Player/PlayerCharacter.cs`
 - `Assets/Scripts/Input/Handler/PlayerInputHandler.cs`

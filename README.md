@@ -25,6 +25,8 @@ Check the `FEATURES/FEATURES.md` for full details. Quick summary:
 - **Documentation:**
   - Changelog: `CHANGELOG.md`
   - Feature index: `FEATURES/FEATURES.md`
+  - Multiplayer architecture and packet flow: `docs/MultiplayerArchitecture.md`
+  - Text rendering resources: `docs/TextMeshProResources.md`
 
 - **How to contribute:** update `FEATURES/FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` or `docs/` and link it here. Update `CHANGELOG.md` under `Unreleased` when making notable changes.
 

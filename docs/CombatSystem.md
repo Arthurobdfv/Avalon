@@ -3,6 +3,7 @@
 Overview
 - A lightweight combat system implemented for characters.
 - Main classes: `CombatManager`, `CombatCharacter`, `CombatBaseStats`, `EnemyCombatBaseStats`, `PlayerCharacter`, `EnemyCharacter`.
+- Multiplayer note: combat is presently local/authoritative in-scene. Player input packets (`PlayerInputState`) are routed through the multiplayer layer, but combat resolution still happens locally on the instance with a `CombatManager`. Server-side aggregation (`PlayersInputManager`) is a TODO.
 
 Components
 - `CombatBaseStats` (ScriptableObject)
@@ -30,6 +31,7 @@ Components
   - Defines the static event `CombatTickHandler(float previousTickTime, float currentTickTime, float delta)`.
   - Subscribes to `CombatCharacter.OnPerformCombatHandler` to resolve attacks. Current implementation applies damage directly:
     - `target.CurrentHealth -= source.BaseStats.AttackDamage`.
+  - Also exposes `BeforeCombatTickHandler` and `CombatTickEndHandler` for pre/post tick hooks.
 
 - `PlayerCharacter` / `EnemyCharacter`
   - `PlayerCharacter` overrides `OnCombatTick` behavior (currently similar to base implementation).
@@ -50,12 +52,15 @@ Behavior notes
 - Combat ticks are driven by `FixedUpdate` and the `_tickInterval` counter. The `CombatTickHandler` provides the delta between ticks and the tick timestamps.
 - Attack timing: `CombatCharacter` accumulates `delta` from ticks and compares to `AttackSpeed`. If over the threshold and within `AttackRange`, an attack is triggered.
 - Damage application is currently immediate inside `CombatManager.OnPerformCombat`.
+- Tick order per interval: `BeforeCombatTickHandler` -> `CombatTickHandler` -> `CombatTickEndHandler`, executed when `_currentTickIndex >= _tickInterval`.
+- Multiplayer flow: the combat loop is local today. Clients send `PlayerInputState` via `ClientCommunicationLayerManager`; when multiplayer is enabled, the local instance still resolves combat. A server-side `PlayersInputManager` is planned to aggregate inputs and drive an authoritative combat loop before forwarding results to clients.
 
 TODOs / Known limitations
 - No explicit death handling besides clearing the target in `OnHealthReachZero()` - hook animation and removal logic.
 - Attack resolution is immediate and simple; consider adding hit/impact animations, projectiles, or attack resolution systems.
 - No combat UI or sound behavior wired - subscribe to events to add these features.
 - Tick system is simple and tied to `FixedUpdate` frequency. Consider decoupling for deterministic simulations or multiplayer.
+- Combat is not yet server-authoritative: no server-side processing of `PlayerInputState` and no replication of combat outcomes to clients. `PlayersInputManager` exists but has an unimplemented handler.
 
 Files of interest
 - `Assets/Scripts/Character/Combat/CombatManager.cs`

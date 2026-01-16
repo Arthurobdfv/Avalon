@@ -21,6 +21,10 @@ All notable changes to this repository will be documented in this file.
 
 - Misc
   - Various small fixes and adjustments across editor scripts and runtime handlers to integrate the above changes.
+  - Added documentation for the multiplayer handler and observer architecture (`docs/MultiplayerArchitecture.md`).
+  - Expanded combat system docs with tick hook order, multiplayer input flow, and server-authoritative limitations (`docs/CombatSystem.md`).
+  - Documented manager responsibilities and per-map entity snapshots in `docs/feature-basic-entity-manager-and-combat.md` and updated automation notes in `.github/copilot-instructions.md`.
+  - Added the full set of TextMesh Pro default resources (fonts, materials, shaders, emoji sprites) to version control so text rendering works consistently across environments.
 
 ### Documentation
 

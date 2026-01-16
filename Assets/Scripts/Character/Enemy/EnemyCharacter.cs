@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemyCharacter : CombatCharacter
 {
     public new EnemyCombatBaseStats BaseStats => (EnemyCombatBaseStats)base.BaseStats;
+    public string EntityAssedId;
     private void Start()
     {
         _currentHealth = base.BaseStats.Health;
@@ -26,9 +27,9 @@ public class EnemyCharacter : CombatCharacter
     protected override void OnCombatTick(float delta)
     {
         base.OnCombatTick(delta);
-        if (Target != null)
+        if (CurrentHealth <= 0)
         {
-
+            OnHealthReachZeroHandler?.Invoke(this);
         }
     }
 

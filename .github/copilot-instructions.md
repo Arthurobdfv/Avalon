@@ -15,6 +15,9 @@ Repository summary
   - `.github/copilot-instructions.md` (this file)
   - `docs/CombatSystem.md`
   - `docs/COPILOT_DOCS_DOCUMENTING.md`
+  - `docs/MultiplayerArchitecture.md`
+  - `docs/TextMeshProResources.md`
+  - `docs/feature-basic-entity-manager-and-combat.md`
 
 Note: other documents referenced in prior guidance such as `DOCUMENTATION.md` or `FEATURES/FEATURES.md` are not present in the repository. If you rely on those files for workflow or indexing, add them to the repo or update this file to point to existing equivalents.
 
@@ -61,6 +64,14 @@ Updated documentation & workflow rules (clarified)
   - After automation edits: add an "Unstaged / Recent runtime changes" section to the related `docs/` page and append a one-line note to `CHANGELOG.md` under `Unreleased`.
   - Follow `docs/COPILOT_DOCS_DOCUMENTING.md` when creating commit messages or PR descriptions from unstaged changes.
 
+Manager summary (runtime & multiplayer)
+- `GlobalEntitiesManager`: global registry, listens to spawn/despawn, instantiates players on connect, and broadcasts per-map `EntitySpawnPacket` snapshots via `ServerCommunicationLayerManager.SendMap` in `LateUpdate`.
+- `PlayerEntitiesManager`: map-aware player lookup and interaction helper (assigns nearest enemy on the player map).
+- `EnemyBehaviourManager`: hooks `CombatManager.BeforeCombatTickHandler` to refresh enemy targeting/aggro per combat tick using map-aware queries.
+- `CombatManager`: fixed-step combat tick dispatcher; resolves `OnPerformCombatHandler` by applying damage; exposes before/after tick hooks.
+- Multiplayer layers: `MultiplayerConnectionManager`, `ServerCommunicationLayerManager`, `ClientCommunicationLayerManager`, and packet handlers (`ServerPacketHandler`/`ClientPacketHandler`) orchestrate connect/observe/map routing; local loopback uses `Local*PacketSender/Receiver` for in-editor play.
+- TODO: `PlayersInputManager` server-side input aggregation is unimplemented; combat is currently local/instance-authoritative.
+
 Documentation generation note: avoid inserting non-ASCII or special punctuation characters (for example: smart quotes, em-dashes, non-breaking spaces, and other locale-specific symbols) in generated Markdown files. Prefer ASCII characters and simple punctuation (straight quotes, hyphen-minus `-`, plain spaces). This reduces the risk of encoding errors during static site builds or when tools assume UTF-8 encoding.
 
 Conventions and coding notes
@@ -68,6 +79,11 @@ Conventions and coding notes
 - Follow existing code style. Keep changes minimal and consistent.
 - Prefer existing helpers and avoid new third-party dependencies unless necessary.
 - Guard editor-only code for `Assembly-CSharp-Editor`.
+
+Current unstaged summary (feature/Client_Server_Handling_Reestructure)
+- Added full TextMesh Pro default resources under `Assets/TextMesh Pro/` (fonts, materials, shaders, sprite assets, settings, line breaking tables) and documented in `docs/TextMeshProResources.md` with links from `README.md` and `FEATURES/FEATURES.md`.
+- Documented multiplayer architecture, manager responsibilities, and map-scoped entity snapshots (`docs/MultiplayerArchitecture.md`, `docs/feature-basic-entity-manager-and-combat.md`), including GlobalEntitiesManager, connection/observer flow, and map data notes.
+- Expanded combat docs to clarify tick hook order, multiplayer input flow, and server-authoritative limitations (`docs/CombatSystem.md`).
 
 Automation bookkeeping
 

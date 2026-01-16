@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class PlayerInputHandler : MonoBehaviour
 {
-    [SerializeField] PlayerCharacter _playerCharacter;
-    List<(DirectionEnum direction, float upperBand)> DirectionWithUpperBandMapping = new ();
+    List<(DirectionEnum direction, float upperBand)> DirectionWithUpperBandMapping = new();
     private PlayerInputState _currentInputState = null;
+    private PlayerInputState _serverReceivedInputState = null;
 
     [SerializeField] private PlayerEntitiesManager _playerManager;
 
+    [SerializeField] ClientCommunicationLayerManager _clientCommunicationLayerManager;
+    private ClientPacketHandler _clientPacketHandler;
+
     // TODO: Refactor into a different file
-    class PlayerInputState
+    [AvalonAuthorized]
+    public class PlayerInputState : AvalonPacket
     {
         public Vector2 LookDirection = Vector2.zero;
         public Vector2 MoveDirection = Vector2.zero;
@@ -28,14 +32,50 @@ public class PlayerInputHandler : MonoBehaviour
         {
             _playerManager = FindFirstObjectByType<PlayerEntitiesManager>();
         }
+
+        if(_clientCommunicationLayerManager == null)
+        {
+            _clientCommunicationLayerManager = FindFirstObjectByType<ClientCommunicationLayerManager>();
+        }
+
+        UpdateInputHandler(GlobalConfigsProvider.MultiplayerEnabled);
+        GlobalConfigsProvider.MultiplayerEnabledChanged += UpdateInputHandler;
+    }
+
+    private void UpdateInputHandler(bool isEnabled)
+    {
+        Debug.Log($"Updating Player Input Handler to Multiplayer: {isEnabled}");
+        PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
         PlayerInputMapper.OnSendMoveInput += HandleMoveInput;
+
+        PlayerInputMapper.OnSentInteractInput -= HandleInteractInput;
         PlayerInputMapper.OnSentInteractInput += HandleInteractInput;
+        
+        if(_clientPacketHandler == null)
+        {
+            _clientPacketHandler = FindAnyObjectByType<ClientPacketHandler>(); 
+        }
+        if(isEnabled)
+        {
+            _clientPacketHandler.RegisterClientHandler<PlayerInputState>(HandleServerInputState);
+        }
+        else
+        {
+            _clientPacketHandler.UnregisterClientHandler<PlayerInputState>();
+        }
+
+    }
+
+    private void UnsubAll(bool isEnabledMultiplayer)
+    {
+        PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
+        PlayerInputMapper.OnSentInteractInput -= HandleInteractInput;
     }
 
     private void OnDisable()
     {
-        PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
-        PlayerInputMapper.OnSentInteractInput -= HandleInteractInput;
+        GlobalConfigsProvider.MultiplayerEnabledChanged -= UpdateInputHandler;
+        UnsubAll(GlobalConfigsProvider.MultiplayerEnabled);
     }
 
 
@@ -43,52 +83,83 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (_currentInputState != null)
         {
-            HandlePlayerMovement();
-            HandlePlayerInteraction();
-            _currentInputState = null;
+            if(GlobalConfigsProvider.MultiplayerEnabled)
+            {
+                _clientCommunicationLayerManager.Send(_currentInputState);
+                _currentInputState = null;
+            }
+        }
+        if (GlobalConfigsProvider.MultiplayerEnabled)
+        {
+            if(_serverReceivedInputState != null)
+            {
+                HandlePlayerInputState(_serverReceivedInputState, () => { _serverReceivedInputState = null; });
+            }
+        }
+        else
+        {
+            if(_currentInputState != null)
+            {
+                HandlePlayerInputState(_currentInputState, () => { _currentInputState = null; });
+            }
         }
     }
 
-    private void HandlePlayerInteraction()
+    private void HandleServerInputState(PlayerInputState state)
     {
-        if (!_currentInputState.InteractAction)
+        _serverReceivedInputState = state;
+    }
+
+    private void HandlePlayerInputState(PlayerInputState state, Action handleCallback = null)
+    {
+        GlobalEntitiesManager.allEntities.TryGetValue(state.ClientId, out var entity);
+        var playerCharacter = entity as PlayerCharacter;
+        HandlePlayerMovement(state, playerCharacter);
+        HandlePlayerInteraction(state, playerCharacter);
+        handleCallback?.Invoke();
+    }
+
+    private void HandlePlayerInteraction(PlayerInputState state, PlayerCharacter playerCharacter)
+    {
+        if (!state.InteractAction)
         {
             return;
         }
         // Look for the closest enemy and start combat
-        _playerManager.HandlePlayerInteract(_playerCharacter);
+        _playerManager.HandlePlayerInteract(playerCharacter);
     }
 
-    private void HandlePlayerMovement()
+    private void HandlePlayerMovement(PlayerInputState state, PlayerCharacter playerCharacter)
     {
-        var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
-        var isSprinting = _currentInputState.SprintAction && hasMovementInput;
-        _playerCharacter.SetMovement(hasMovementInput ? isSprinting ? 2 : 1 : 0);
+        var hasMovementInput = state.MoveDirection != Vector2.zero;
+        var isSprinting = state.SprintAction && hasMovementInput;
+        var movement = hasMovementInput ? isSprinting ? 2 : 1 : 0;
+        playerCharacter?.SetMovement(hasMovementInput ? isSprinting ? 2 : 1 : 0);
         var characterFacingVector = hasMovementInput
-            ? _currentInputState.MoveDirection 
-            : _playerCharacter.Target != null ? 
-                LookDirectionFromTargetPosition(_playerCharacter.Target.transform.position) :
-                LookDirectionFromMousePosition(_currentInputState.LookDirection);
-        _playerCharacter.SetDirection(Vector2DirectionEnum(characterFacingVector));
+            ? state.MoveDirection
+            : playerCharacter.Target != null ?
+                LookDirectionFromTargetPosition(playerCharacter.Target.transform.position, playerCharacter.transform.position) :
+                LookDirectionFromMousePosition(state.LookDirection, playerCharacter.transform.position);
+        playerCharacter?.SetDirection(Vector2DirectionEnum(characterFacingVector));
 
         if (hasMovementInput)
         {
             // TODO: Replace hardcoded speed with character speed attribute
-            _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection.normalized * (3 + (isSprinting ? 1 : 0) * 3)  * Time.fixedDeltaTime;
+            playerCharacter.transform.position += (Vector3)state.MoveDirection.normalized * (3 + (isSprinting ? 1 : 0) * 3) * Time.fixedDeltaTime;
         }
     }
 
-    private Vector2 LookDirectionFromTargetPosition(Vector3 position)
+    private Vector2 LookDirectionFromTargetPosition(Vector3 targetPosition, Vector3 playerPosition)
     {
-        var playerPos = Camera.main.WorldToScreenPoint(_playerCharacter.transform.position);
-        var targetPos = Camera.main.WorldToScreenPoint(position);
+        var playerPos = Camera.main.WorldToScreenPoint(playerPosition);
+        var targetPos = Camera.main.WorldToScreenPoint(targetPosition);
         var lookDirection = (targetPos - playerPos).normalized;
         return lookDirection;
     }
 
-    private Vector2 LookDirectionFromMousePosition(Vector2 mousePosition)
+    private Vector2 LookDirectionFromMousePosition(Vector2 mousePosition, Vector3 playerPosition)
     {
-        var playerPos = Camera.main.WorldToScreenPoint(_playerCharacter.transform.position);
+        var playerPos = Camera.main.WorldToScreenPoint(playerPosition);
         var lookDirection = (mousePosition - (Vector2)playerPos).normalized;
         return lookDirection;
     }
@@ -102,7 +173,7 @@ public class PlayerInputHandler : MonoBehaviour
             GetCurrentInputState().LookDirection = lookDirection;
         }
 
-        if(moveDirection != Vector2.zero)
+        if (moveDirection != Vector2.zero)
         {
             GetCurrentInputState().MoveDirection = moveDirection;
         }
@@ -117,7 +188,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private PlayerInputState GetCurrentInputState()
     {
-        if( _currentInputState == null)
+        if (_currentInputState == null)
         {
             _currentInputState = new PlayerInputState();
         }
@@ -129,7 +200,7 @@ public class PlayerInputHandler : MonoBehaviour
         if (direction == Vector2.zero)
             return DirectionEnum.DIRECTION_NONE;
 
-        
+
 
         var defaultDirection = Vector2.right;
         var angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
