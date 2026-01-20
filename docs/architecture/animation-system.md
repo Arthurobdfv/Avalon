@@ -38,14 +38,17 @@ The system supports multiple animation states:
 
 The system supports 8-direction animation:
 
-```
-NW    N    NE
-  \   |   /
-   \  |  /
-W ---+--- E
-   /  |  \
-  /   |   \
-SW    S    SE
+```mermaid
+graph TD
+    Center((Character))
+    Center --> N[N]
+    Center --> NE[NE]
+    Center --> E[E]
+    Center --> SE[SE]
+    Center --> S[S]
+    Center --> SW[SW]
+    Center --> W[W]
+    Center --> NW[NW]
 ```
 
 Animation clips are selected based on:
@@ -55,23 +58,13 @@ Animation clips are selected based on:
 
 ## Animation Update Flow
 
-```
-Input System
-    |
-    v
-Character State Update
-    |
-    v
-CharacterAnimationHandler
-    |
-    v
-Animator Parameters Update
-    |
-    v
-Unity Animator
-    |
-    v
-Animation Playback
+```mermaid
+graph TD
+    IS[Input System] --> CSU[Character State Update]
+    CSU --> CAH[CharacterAnimationHandler]
+    CAH --> APU[Animator Parameters Update]
+    APU --> UA[Unity Animator]
+    UA --> AP[Animation Playback]
 ```
 
 ## Integration Points

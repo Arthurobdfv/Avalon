@@ -67,20 +67,16 @@ Character animation management with directional support.
 
 ## System Interactions
 
-```
-Player Input
-    |
-    v
-Input System --> Character State
-    |                  |
-    v                  v
-Multiplayer      Animation System
-    |                  |
-    v                  v
-Entity Manager <-> Combat System
-    |
-    v
-Network Sync (Map-Scoped)
+```mermaid
+graph TD
+    PI[Player Input] --> IS[Input System]
+    IS --> CS[Character State]
+    IS --> MP[Multiplayer]
+    CS --> AS[Animation System]
+    MP --> EM[Entity Manager]
+    AS --> EM
+    EM <--> CombatSys[Combat System]
+    EM --> NS[Network Sync Map-Scoped]
 ```
 
 ## Design Principles

@@ -94,27 +94,15 @@ PlayerInputState
 
 ## Input Pipeline
 
-```
-Unity Input System
-    |
-    v
-PlayerInputMapper
-    |
-    v
-PlayerInputHandler
-    |
-    +-- Local Mode --> Apply to Player Directly
-    |
-    +-- Multiplayer Mode --> ClientCommunicationLayerManager
-                                    |
-                                    v
-                            Server: PlayersInputManager (TODO)
-                                    |
-                                    v
-                            Apply to Authoritative Player
-                                    |
-                                    v
-                            Broadcast Updated State
+```mermaid
+graph TD
+    UIS[Unity Input System] --> PIM[PlayerInputMapper]
+    PIM --> PIH[PlayerInputHandler]
+    PIH --> |Local Mode| APD[Apply to Player Directly]
+    PIH --> |Multiplayer Mode| CCLM[ClientCommunicationLayerManager]
+    CCLM --> SPIM[Server: PlayersInputManager TODO]
+    SPIM --> AAP[Apply to Authoritative Player]
+    AAP --> BUS[Broadcast Updated State]
 ```
 
 ## Integration Points

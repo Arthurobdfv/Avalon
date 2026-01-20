@@ -102,22 +102,19 @@ var nearest = EntityExtensions.ClosestTo(position, candidates);
 
 ## Architecture Diagram
 
-```
-GlobalEntitiesManager
-    |
-    +-- Listens to: Spawn/Despawn Events
-    +-- Maintains: Entity Registry (per-map)
-    +-- Publishes: EntitySpawnPacket (multiplayer)
-    |
-    +-- PlayerEntitiesManager
-    |       |
-    |       +-- Player Queries
-    |       +-- Interaction Targeting
-    |
-    +-- EntityExtensions
-            |
-            +-- Range Checks
-            +-- Distance Utilities
+```mermaid
+graph TD
+    GEM[GlobalEntitiesManager] --> |Listens to| Events[Spawn/Despawn Events]
+    GEM --> |Maintains| Registry[Entity Registry per-map]
+    GEM --> |Publishes| Packet[EntitySpawnPacket multiplayer]
+    
+    GEM --> PEM[PlayerEntitiesManager]
+    PEM --> Queries[Player Queries]
+    PEM --> Targeting[Interaction Targeting]
+    
+    GEM --> EE[EntityExtensions]
+    EE --> RangeCheck[Range Checks]
+    EE --> Distance[Distance Utilities]
 ```
 
 ## Integration Points

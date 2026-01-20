@@ -40,46 +40,24 @@ The combat flow feature integrates player input, entity management, and combat r
 ### Attack Flow
 
 **Player Attack:**
-```
-Player Input
-    |
-    v
-PlayerInputHandler (detects interact/attack)
-    |
-    v
-PlayerCharacter (checks attack timer)
-    |
-    v
-CombatCharacter.OnPerformCombatHandler (event)
-    |
-    v
-CombatManager.OnPerformCombat (applies damage)
-    |
-    v
-Target.CurrentHealth reduced
-    |
-    v
-OnHealthChangeHandler (UI update)
+```mermaid
+graph TD
+    PI[Player Input] --> PIH[PlayerInputHandler detects interact/attack]
+    PIH --> PC[PlayerCharacter checks attack timer]
+    PC --> PCEH[CombatCharacter.OnPerformCombatHandler event]
+    PCEH --> CMOP[CombatManager.OnPerformCombat applies damage]
+    CMOP --> TCH[Target.CurrentHealth reduced]
+    TCH --> OHCH[OnHealthChangeHandler UI update]
 ```
 
 **Enemy Attack:**
-```
-EnemyBehaviourManager (tick-based refresh)
-    |
-    v
-Find nearest player within vision range
-    |
-    v
-Set as target
-    |
-    v
-Move toward target if out of attack range
-    |
-    v
-CombatCharacter (attack when in range & timer ready)
-    |
-    v
-Damage application (same as player)
+```mermaid
+graph TD
+    EBM[EnemyBehaviourManager tick-based refresh] --> FNP[Find nearest player within vision range]
+    FNP --> ST[Set as target]
+    ST --> MT[Move toward target if out of attack range]
+    MT --> CC[CombatCharacter attack when in range & timer ready]
+    CC --> DA[Damage application same as player]
 ```
 
 ### Targeting System
