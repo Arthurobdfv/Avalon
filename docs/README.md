@@ -25,7 +25,6 @@ Technical documentation explaining **how** the systems work:
 - [Input System](architecture/input-system.md) - PlayerInputMapper, input handling, direction mapping
 - [Animation System](architecture/animation-system.md) - CharacterAnimationHandler, animation integration
 - [Multiplayer Architecture](architecture/multiplayer-architecture.md) - Client-server packet handling, observer support
-- [TextMesh Pro Resources](architecture/textmeshpro-resources.md) - TMP asset management and configuration
 
 ### Features (`docs/features/`)
 

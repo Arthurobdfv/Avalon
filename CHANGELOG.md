@@ -18,7 +18,6 @@ All notable changes to this repository will be documented in this file.
   - `docs/architecture/input-system.md` - Input handling and direction mapping
   - `docs/architecture/animation-system.md` - Animation coordination
   - `docs/architecture/multiplayer-architecture.md` - Client-server packet handling (migrated from `docs/MultiplayerArchitecture.md`)
-  - `docs/architecture/textmeshpro-resources.md` - TMP asset management (migrated from `docs/TextMeshProResources.md`)
 
 - **Feature Documentation** - Consolidated user-facing feature docs
   - `docs/features/README.md` - Feature index with status tracking
@@ -45,10 +44,14 @@ All notable changes to this repository will be documented in this file.
   - `docs/CombatSystem.md` - Migrated to `docs/architecture/combat-system.md`
   - `docs/feature-basic-entity-manager-and-combat.md` - Migrated to `docs/features/combat-flow.md`
   - `docs/MultiplayerArchitecture.md` - Migrated to `docs/architecture/multiplayer-architecture.md`
-  - `docs/TextMeshProResources.md` - Migrated to `docs/architecture/textmeshpro-resources.md`
+  - `docs/TextMeshProResources.md` - Removed (package documentation not needed)
   - `docs/COPILOT_DOCS_DOCUMENTING.md` - Consolidated into `docs/contributing/documentation-guide.md`
   - `docs/copilot-doc-update-pattern.md` - Consolidated into `docs/contributing/documentation-guide.md`
   - `.github/COPILOT_INSTRUCTIONS.md` - Consolidated into `.github/copilot-instructions.md`
+
+- **AI Usage Note**
+  - AI tools were used exclusively for documentation generation and organization
+  - No code was written using AI - all code is human-authored
 
 ### Features & Updates
 

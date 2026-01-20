@@ -30,7 +30,6 @@ This project serves as:
   - [Input System](docs/architecture/input-system.md) - Input handling and direction mapping
   - [Animation System](docs/architecture/animation-system.md) - Character animation coordination
   - [Multiplayer Architecture](docs/architecture/multiplayer-architecture.md) - Client-server packet handling
-  - [TextMesh Pro Resources](docs/architecture/textmeshpro-resources.md) - TMP asset management
 
 - **[Contributing](docs/contributing/README.md)** - How to contribute
   - [Documentation Guide](docs/contributing/documentation-guide.md) - Writing and updating docs
@@ -43,7 +42,7 @@ This project serves as:
 Game assets purchased from [PVGames (Pioneer Valley Games)](http://www.pioneervalleygames.com/)
 
 ## AI Usage Disclaimer
-Some portions of this README and other documentation were generated or assisted by AI tools to enhance clarity and organization.
+AI tools were used exclusively for documentation generation and organization. All code in this repository is human-authored - no code was written using AI.
 
 
 ## License

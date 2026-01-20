@@ -59,7 +59,6 @@ docs/
   - Sprite Pipeline - Automated sprite-to-animation (in progress)
   - Enemy Behavior - AI targeting and behavior management
   - Multiplayer Architecture - Client-server packet handling with observer support
-  - TextMesh Pro Resources - TMP asset management and configuration
 
 
 ## Documentation Standards
