@@ -72,3 +72,12 @@ This document summarizes the current multiplayer architecture, packet flow, and 
 - Implement `PlayersInputManager.HandlePlayerInputState` to process and apply player inputs server-side.
 - Replace local-loopback transport with network transport implementations when available.
 - Harden observer registration and cleanup to avoid stale observer entries when clients disconnect.
+
+## Related Documentation
+
+- [Combat System](combat-system.md) - Combat tick integration
+- [Entity Management](entity-management.md) - Entity registry and map-scoped queries
+- [Input System](input-system.md) - Player input packet flow
+- [Combat Flow Feature](../features/combat-flow.md) - Combat feature using multiplayer
+- [Contributing Guide](../contributing/README.md) - How to contribute
+
