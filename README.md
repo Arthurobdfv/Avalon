@@ -12,21 +12,29 @@ This project serves as:
 ## Status
 🚧 Prototype/Work in Progress
 
-Project progress & feature tracker: `FEATURES/FEATURES.md`
+## Quick Links
 
-## Project Progress
+📚 **[Documentation Hub](docs/README.md)** - Start here for all documentation
 
-Check the `FEATURES/FEATURES.md` for full details. Quick summary:
+- **[Features](docs/features/README.md)** - What the game can do
+  - [Character Animation](docs/features/character-animation.md) - Sprite-based character animations
+  - [Character Movement](docs/features/character-movement.md) - Player movement and input
+  - [Combat Flow](docs/features/combat-flow.md) - Entity management and combat system
+  - [Enemy Behavior](docs/features/enemy-behavior.md) - Enemy AI and targeting
+  - [Sprite Pipeline](docs/features/sprite-pipeline.md) - Automated sprite-to-animation (in progress)
+  - [Build Pipeline](docs/features/build-pipeline.md) - CI/CD automation (planned)
 
-- **Features:**
-  - [SpriteSheet to Animations Pipeline](FEATURES/SpriteSheet-to-Animations.md) — in progress; slicing implemented and animator-transition prototype added
-  - [Basic Entity Manager & Combat Flow](docs/feature-basic-entity-manager-and-combat.md) — implemented (basic) (implementation notes: `docs/CombatSystem.md`)
+- **[Architecture](docs/architecture/README.md)** - How the systems work
+  - [Combat System](docs/architecture/combat-system.md) - Event-driven combat mechanics
+  - [Entity Management](docs/architecture/entity-management.md) - Character registration and queries
+  - [Input System](docs/architecture/input-system.md) - Input handling and direction mapping
+  - [Animation System](docs/architecture/animation-system.md) - Character animation coordination
 
-- **Documentation:**
-  - Changelog: `CHANGELOG.md`
-  - Feature index: `FEATURES/FEATURES.md`
+- **[Contributing](docs/contributing/README.md)** - How to contribute
+  - [Documentation Guide](docs/contributing/documentation-guide.md) - Writing and updating docs
+  - [Code Style Guide](docs/contributing/code-style.md) - Coding conventions
 
-- **How to contribute:** update `FEATURES/FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` or `docs/` and link it here. Update `CHANGELOG.md` under `Unreleased` when making notable changes.
+- **[Changelog](CHANGELOG.md)** - Project history and changes
 
 ## Credits
 ### Assets

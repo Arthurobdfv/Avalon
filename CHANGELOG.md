@@ -4,6 +4,48 @@ All notable changes to this repository will be documented in this file.
 
 ## Unreleased
 
+### Documentation Restructuring
+
+- **Complete documentation overhaul** - Reorganized all documentation under `docs/` with clear structure
+  - Created `docs/README.md` as central documentation hub
+  - Organized docs into `architecture/`, `features/`, `contributing/`, and `changelog/` folders
+  - All documentation files now use kebab-case naming convention
+  
+- **Architecture Documentation** - New technical system documentation
+  - `docs/architecture/README.md` - High-level architecture overview
+  - `docs/architecture/combat-system.md` - Combat mechanics (migrated from `docs/CombatSystem.md`)
+  - `docs/architecture/entity-management.md` - Entity registration and queries
+  - `docs/architecture/input-system.md` - Input handling and direction mapping
+  - `docs/architecture/animation-system.md` - Animation coordination
+
+- **Feature Documentation** - Consolidated user-facing feature docs
+  - `docs/features/README.md` - Feature index with status tracking
+  - `docs/features/character-animation.md` - Character animations (migrated from `FEATURES/`)
+  - `docs/features/character-movement.md` - Player movement (migrated from `FEATURES/`)
+  - `docs/features/sprite-pipeline.md` - Sprite-to-animation automation (migrated from `FEATURES/`)
+  - `docs/features/combat-flow.md` - Combat interactions (migrated from `docs/`)
+  - `docs/features/enemy-behavior.md` - Enemy AI (migrated from `FEATURES/`)
+  - `docs/features/build-pipeline.md` - CI/CD plans
+
+- **Contributing Documentation** - New contribution guides
+  - `docs/contributing/README.md` - How to contribute overview
+  - `docs/contributing/documentation-guide.md` - Documentation standards and templates
+  - `docs/contributing/code-style.md` - Coding conventions and best practices
+
+- **Updated Files**
+  - `README.md` - Updated to point to new documentation structure
+  - `.github/copilot-instructions.md` - Consolidated and updated with new doc structure
+  
+- **Removed Files**
+  - `FEATURES.md` - Replaced by `docs/features/README.md`
+  - `DOCUMENTATION.md` - Replaced by `docs/README.md`
+  - `FEATURES/` folder - Content migrated to `docs/features/`
+  - `docs/CombatSystem.md` - Migrated to `docs/architecture/combat-system.md`
+  - `docs/feature-basic-entity-manager-and-combat.md` - Migrated to `docs/features/combat-flow.md`
+  - `docs/COPILOT_DOCS_DOCUMENTING.md` - Consolidated into `docs/contributing/documentation-guide.md`
+  - `docs/copilot-doc-update-pattern.md` - Consolidated into `docs/contributing/documentation-guide.md`
+  - `.github/COPILOT_INSTRUCTIONS.md` - Consolidated into `.github/copilot-instructions.md`
+
 ### Features & Updates
 
 - SpriteSheet ? Animations
