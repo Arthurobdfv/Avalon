@@ -29,6 +29,8 @@ This project serves as:
   - [Entity Management](docs/architecture/entity-management.md) - Character registration and queries
   - [Input System](docs/architecture/input-system.md) - Input handling and direction mapping
   - [Animation System](docs/architecture/animation-system.md) - Character animation coordination
+  - [Multiplayer Architecture](docs/architecture/multiplayer-architecture.md) - Client-server packet handling
+  - [TextMesh Pro Resources](docs/architecture/textmeshpro-resources.md) - TMP asset management
 
 - **[Contributing](docs/contributing/README.md)** - How to contribute
   - [Documentation Guide](docs/contributing/documentation-guide.md) - Writing and updating docs

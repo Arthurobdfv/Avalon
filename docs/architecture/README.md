@@ -65,6 +65,22 @@ Coordinates character animations based on movement and state.
 - **Key Components:** CharacterAnimationHandler, Animator controllers
 - **Documentation:** [Animation System Architecture](animation-system.md)
 
+### 5. Multiplayer Architecture
+
+Client-server packet handling with observer support and map-scoped delivery.
+
+- **Purpose:** Handle multiplayer communication, packet routing, and observer management
+- **Key Components:** AvalonPacketHandler, ClientPacketHandler, ServerPacketHandler, Communication Layer Managers
+- **Documentation:** [Multiplayer Architecture](multiplayer-architecture.md)
+
+### 6. TextMesh Pro Resources
+
+TextMesh Pro asset management and resource configuration.
+
+- **Purpose:** Ensure text rendering works consistently across all environments and builds
+- **Key Components:** TMP fonts, materials, sprites, shaders, settings
+- **Documentation:** [TextMesh Pro Resources](textmeshpro-resources.md)
+
 ## System Integration
 
 Here's how the systems work together:
