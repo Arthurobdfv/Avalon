@@ -4,5 +4,6 @@ using UnityEngine;
 
 public static class Constants
 {
-    public const string InitialMap = "StartingZone";
+    public const string InitialCombatMap = "InitialCombatMap";
+    public const string InitialSpawnMap = "InitialSpawnMap";
 }

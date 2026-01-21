@@ -12,21 +12,46 @@ This project serves as:
 ## Status
 🚧 Prototype/Work in Progress
 
-Project progress & feature tracker: `FEATURES/FEATURES.md`
+## Documentation
 
-## Project Progress
+📚 **[Documentation Hub](docs/README.md)** - Start here for all documentation
 
-Check the `FEATURES/FEATURES.md` for full details. Quick summary:
+### Quick Links
+- **[Architecture Documentation](docs/architecture/README.md)** - Technical system design
+- **[Features Documentation](docs/features/README.md)** - Implemented features and guides
+- **[Contributing Guide](docs/contributing/README.md)** - How to contribute
+- **[Changelog](CHANGELOG.md)** - Project history and recent changes
 
-- **Features:**
-  - [SpriteSheet to Animations Pipeline](FEATURES/SpriteSheet-to-Animations.md) — in progress; slicing implemented and animator-transition prototype added
-  - [Basic Entity Manager & Combat Flow](docs/feature-basic-entity-manager-and-combat.md) — implemented (basic) (implementation notes: `docs/CombatSystem.md`)
+## Project Status
 
-- **Documentation:**
-  - Changelog: `CHANGELOG.md`
-  - Feature index: `FEATURES/FEATURES.md`
+### Implemented Features
+- ✅ **Character Movement** - WASD movement with directional animations ([docs](docs/features/character-movement.md))
+- ✅ **Combat System** - Basic attack/defend mechanics ([docs](docs/features/combat-flow.md))
+- ✅ **Enemy AI** - Targeting and aggro system ([docs](docs/features/enemy-behavior.md))
+- ✅ **Multiplayer (Local)** - Client-server with local loopback ([docs](docs/architecture/multiplayer-architecture.md))
+- 🚧 **Sprite Pipeline** - Automated animation creation ([docs](docs/features/sprite-pipeline.md))
 
-- **How to contribute:** update `FEATURES/FEATURES.md` with feature status or add a new detailed feature doc under `FEATURES/` or `docs/` and link it here. Update `CHANGELOG.md` under `Unreleased` when making notable changes.
+### Core Systems
+- **Combat Architecture** - Event-driven tick-based system ([docs](docs/architecture/combat-system.md))
+- **Entity Management** - Global registry with map-scoping ([docs](docs/architecture/entity-management.md))
+- **Input System** - Input handling with multiplayer sync ([docs](docs/architecture/input-system.md))
+- **Animation System** - Character animation coordination ([docs](docs/architecture/animation-system.md))
+
+## Getting Started
+
+### For Contributors
+1. Read the [Contributing Guide](docs/contributing/README.md)
+2. Review [Architecture Documentation](docs/architecture/README.md)
+3. Check [Code Style Guide](docs/contributing/code-style.md)
+4. See [Changelog](CHANGELOG.md) for recent changes
+
+### For Testers
+1. Clone the repository
+2. Open in Unity 2021+
+3. Load the sample scene
+4. Enter play mode and test features
+
+See [Feature Documentation](docs/features/README.md) for feature-specific testing instructions.
 
 ## Credits
 ### Assets

@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8176461426248903367
 Transform:
   m_ObjectHideFlags: 0
@@ -131,9 +131,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseStats: {fileID: 11400000, guid: 7dd0267434a9ece44ad34d0c94626054, type: 2}
-  _behavior:
-    <Aggressive>k__BackingField: 1
-    <Ranged>k__BackingField: 0
+  <Target>k__BackingField: {fileID: 0}
+  _markedForDeath: 0
+  <Id>k__BackingField: 
+  <EntityType>k__BackingField: 1
+  EntityAssedId: 
 --- !u!1001 &3614427951675678708
 PrefabInstance:
   m_ObjectHideFlags: 0
