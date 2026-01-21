@@ -6,63 +6,84 @@ This file is the canonical summary of the repository structure, architecture, do
 
 Repository summary
 
-- Name: `Avalon` � a Unity-based MMO prototype and learning project.
+- Name: `Avalon` - a Unity-based MMO prototype and learning project.
 - Purpose: proof-of-concept for MMO mechanics, server ideas, and Unity development practice.
 - Status: Prototype / Work in progress.
-- Key documentation files present in the repository (scanned):
-  - `README.md`
-  - `CHANGELOG.md`
-  - `.github/copilot-instructions.md` (this file)
-  - `docs/CombatSystem.md`
-  - `docs/COPILOT_DOCS_DOCUMENTING.md`
-  - `docs/MultiplayerArchitecture.md`
-  - `docs/TextMeshProResources.md`
-  - `docs/feature-basic-entity-manager-and-combat.md`
 
-Note: other documents referenced in prior guidance such as `DOCUMENTATION.md` or `FEATURES/FEATURES.md` are not present in the repository. If you rely on those files for workflow or indexing, add them to the repo or update this file to point to existing equivalents.
+Documentation structure (updated January 2024)
+
+The documentation has been restructured into a clear hierarchy:
+
+```
+docs/
+├── README.md                    # Documentation hub - start here
+├── architecture/                # Technical architecture docs
+│   ├── README.md               # Architecture overview
+│   ├── combat-system.md        # Combat system architecture
+│   ├── multiplayer-architecture.md  # Multiplayer and packet flow
+│   ├── entity-management.md    # Entity registry and lifecycle
+│   ├── input-system.md         # Input handling architecture
+│   └── animation-system.md     # Animation coordination
+├── features/                    # User-facing feature docs
+│   ├── README.md               # Feature index
+│   ├── combat-flow.md          # Combat feature documentation
+│   ├── character-movement.md   # Movement feature
+│   ├── character-animation.md  # Animation feature
+│   ├── sprite-pipeline.md      # Sprite sheet automation
+│   └── enemy-behavior.md       # Enemy AI feature
+├── contributing/                # Contribution guidelines
+│   ├── README.md               # How to contribute
+│   ├── documentation-guide.md  # Documentation conventions
+│   └── code-style.md           # Coding conventions
+└── changelog/                   # Changelog reference
+    └── README.md               # Points to root CHANGELOG.md
+```
+
+Key documentation files:
+- `README.md` - Project overview with links to new docs structure
+- `CHANGELOG.md` - Unreleased changes and version history
+- `docs/README.md` - Documentation hub (entry point)
+- `docs/architecture/` - Technical system documentation
+- `docs/features/` - User-facing feature documentation
+- `docs/contributing/` - Contribution and style guides
 
 High-level architecture
 
 - Unity client projects: `Assembly-CSharp` and `Assembly-CSharp-Editor` (targets: .NET Framework 4.7.1).
 - Purpose-built systems in the repo include: sprite-sheet-to-animation pipeline, entity manager and combat flow, enemy behaviour manager.
-- Design intent: separate high-level feature docs from implementation notes; currently implementation notes are primarily under `docs/`.
+- Design intent: Architecture docs (technical) separate from feature docs (user-facing).
 
-Scanned Markdown files (details)
+Documentation workflow (updated)
 
-- `README.md`
-  - Project overview, purpose, status, pointers to feature docs (references `FEATURES/FEATURES.md` though that file is not present), credits, AI usage disclaimer, and brief how-to-contribute guidance.
+Documentation workflow (updated)
 
-- `CHANGELOG.md`
-  - Contains an `Unreleased` section summarizing recent features and updates: sprite-sheet pipeline changes, enemy behavior manager, and miscellaneous fixes. Also lists docs updated.
+- Feature lifecycle:
+  - Add architecture docs to `docs/architecture/` for technical systems
+  - Add feature docs to `docs/features/` for user-facing functionality
+  - Use kebab-case for all documentation filenames (e.g., `combat-system.md`, `character-movement.md`)
+  - Update relevant `README.md` index files when adding new docs
+  - Add a short note in `CHANGELOG.md` under `Unreleased` for notable changes
 
-- `docs/CombatSystem.md`
-  - Detailed runtime and design notes for the combat subsystem: `CombatManager`, `CombatCharacter`, `CombatBaseStats`, `EnemyCombatBaseStats`, `PlayerCharacter`, `EnemyCharacter`, utilities, setup steps, known limitations, and files of interest under `Assets/Scripts/Character/...`.
-  - Includes an "Unstaged / Recent runtime changes" section describing recent edits to combat scripts and example assets.
+- Documentation types:
+  - **Architecture docs** (`docs/architecture/`): Technical design, implementation details, system interactions
+  - **Feature docs** (`docs/features/`): User-facing features, usage guides, how-to instructions
+  - **Contributing docs** (`docs/contributing/`): How to contribute, code style, documentation guide
 
-- `docs/COPILOT_DOCS_DOCUMENTING.md`
-  - Process and rules Copilot should follow when documenting unstaged changes and producing commit messages or PR descriptions: inspect `git status`, read changed files, summarize runtime-relevant changes, update or create `docs/` pages with an "Unstaged / Recent runtime changes" section, and compose conventional-style commit messages.
-  - Specifies expected request format from users when asking Copilot to document and commit.
+- Commit guidance:
+  - Small, focused commits. Use imperative mood and reference affected files or docs.
+  - When updating docs with code, change `CHANGELOG.md` at the same time.
+  - Format: `docs(scope): imperative summary` for documentation changes
 
-- `.github/copilot-instructions.md` (this file)
-  - Aggregates repository guidance for prompts, commits, PRs, and automated documentation bookkeeping. This file should be kept in sync when docs or workflow conventions change.
+- Pull request guidance:
+  - Include summary, related docs/issue links, testing steps, affected files, and list docs updated.
+  - Add visuals for UI/visual changes.
+  - Reference the documentation hub (`docs/README.md`) for navigation
 
-Updated documentation & workflow rules (clarified)
-
-- Feature lifecycle
-  - Add or update a feature doc under `docs/` or create `FEATURES/` if you want a dedicated feature index. If you create `FEATURES/FEATURES.md`, update this file to reference it.
-  - Implementation notes and runtime-focused details belong in `docs/`.
-  - Add a short note in `CHANGELOG.md` under `Unreleased` for notable changes.
-
-- Commit guidance
-  - Small, focused commits. Use imperative mood and reference affected files or docs. When updating docs with code, change `CHANGELOG.md` at the same time.
-
-- Pull request guidance
-  - Include summary, related docs/issue links, testing steps, affected files, and list docs updated. Add visuals for UI/visual changes.
-
-- Prompts and Copilot automation guidance
+- Prompts and Copilot automation guidance:
   - Provide explicit file paths and concise behavior descriptions when requesting automated edits.
-  - After automation edits: add an "Unstaged / Recent runtime changes" section to the related `docs/` page and append a one-line note to `CHANGELOG.md` under `Unreleased`.
-  - Follow `docs/COPILOT_DOCS_DOCUMENTING.md` when creating commit messages or PR descriptions from unstaged changes.
+  - After automation edits: update or create relevant docs in `docs/architecture/` or `docs/features/`
+  - Follow `docs/contributing/documentation-guide.md` when creating commit messages or PR descriptions from unstaged changes.
+  - Add "Unstaged / Recent runtime changes" section for work-in-progress documentation
 
 Manager summary (runtime & multiplayer)
 - `GlobalEntitiesManager`: global registry, listens to spawn/despawn, instantiates players on connect, and broadcasts per-map `EntitySpawnPacket` snapshots via `ServerCommunicationLayerManager.SendMap` in `LateUpdate`.
@@ -269,18 +290,23 @@ For better responsiveness with network latency:
 
 Automation bookkeeping
 
+- This file was updated after the January 2024 documentation restructure.
+- Documentation is now organized into `docs/architecture/`, `docs/features/`, and `docs/contributing/`
 - Update this file whenever Copilot automation performs repository-wide documentation edits.
 - If files listed here are renamed/removed, update this file accordingly.
 
 Action items for maintainers
 
-- If you want a feature index, add `FEATURES/FEATURES.md` and update this file with its path.
-- If you want a documentation structure file, add `DOCUMENTATION.md` and update references.
-- To document unstaged changes and prepare commits: run `git status --porcelain --untracked-files=all`, follow `docs/COPILOT_DOCS_DOCUMENTING.md`, update the related `docs/` file and `CHANGELOG.md`, then create a commit and PR with the generated message and description.
+- To document unstaged changes and prepare commits: run `git status --porcelain --untracked-files=all`, follow `docs/contributing/documentation-guide.md`, update the related docs file and `CHANGELOG.md`, then create a commit and PR with the generated message and description.
+- When adding new documentation, update the appropriate `README.md` index in `docs/architecture/`, `docs/features/`, or `docs/contributing/`
+- Major documentation changes should be noted in root `CHANGELOG.md` under `Unreleased`
 
 Notes
 
-- This file was updated after scanning the repository for all `*.md` files. It reflects the current set of Markdown documents present in the repository root and `docs/` folder.
+- Documentation structure follows kebab-case naming convention
+- All docs use relative links for cross-references
+- Documentation hub is at `docs/README.md`
+- Old scattered documentation has been consolidated and reorganized
 
 # PR Message Requests (automation directive)
 

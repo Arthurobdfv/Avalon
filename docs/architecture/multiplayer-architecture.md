@@ -144,10 +144,12 @@ sequenceDiagram
 ## TODOs / Limitations
 - Replace local-loopback transport with network transport implementations when available.
 - Harden observer registration and cleanup to avoid stale observer entries when clients disconnect.
-- Combat is still local/instance-authoritative; server-side combat resolution is not yet implemented.
 
-## See Also
+## Related Documentation
 
-- [Packets and Handlers Reference](PacketsAndHandlers.md) - Comprehensive reference of all packets and their handlers.
-- [Combat System](CombatSystem.md) - Combat tick system and damage resolution.
-- [Entity Manager and Combat](feature-basic-entity-manager-and-combat.md) - Entity management architecture.
+- [Combat System](combat-system.md) - Combat tick integration
+- [Entity Management](entity-management.md) - Entity registry and map-scoped queries
+- [Input System](input-system.md) - Player input packet flow
+- [Combat Flow Feature](../features/combat-flow.md) - Combat feature using multiplayer
+- [Contributing Guide](../contributing/README.md) - How to contribute
+

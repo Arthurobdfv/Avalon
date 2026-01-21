@@ -53,6 +53,16 @@ All notable changes to this repository will be documented in this file.
 
 ### Documentation
 
+- **Major documentation restructure (January 2024):**
+  - Reorganized all documentation into clear structure: `docs/architecture/`, `docs/features/`, `docs/contributing/`
+  - Created comprehensive documentation hub at `docs/README.md`
+  - Migrated and consolidated scattered documentation into organized structure
+  - Added new architecture docs: `input-system.md`, `animation-system.md`, `entity-management.md`
+  - Consolidated contributing guides: `documentation-guide.md`, `code-style.md`
+  - Created feature documentation: `combat-flow.md` and migrated existing feature docs
+  - Updated root `README.md` with links to new documentation structure
+  - Updated `.github/copilot-instructions.md` with new documentation workflow
+  - All documentation now uses kebab-case naming convention
 - Updated `FEATURES/SpriteSheet-to-Animations.md` to reflect the current implementation, status, and remaining work.
 - Added this `CHANGELOG.md` to track Unreleased changes and provide a single place for release notes.
 

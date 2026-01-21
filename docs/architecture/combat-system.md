@@ -200,4 +200,10 @@ Testing / QA notes
 - To test locally: ensure a `CombatManager` instance is in the scene (attach to a persistent GameObject), assign `BaseStats` to character prefabs, and set `Target` for player/enemy instances. Watch Console for the `[CombatCharacter]` timer logs.
 - Verify `FixedUpdate` frequency and `_tickInterval` are appropriate for your gameplay feel; these affect attack cadence granularity.
 
-If you want, I can also add a short example scene setup or a changelog entry summarizing the unstaged changes.
+## Related Documentation
+
+- [Entity Management](entity-management.md) - Entity registry and lifecycle
+- [Multiplayer Architecture](multiplayer-architecture.md) - Network packet flow
+- [Combat Flow Feature](../features/combat-flow.md) - User-facing combat feature
+- [Enemy Behavior](../features/enemy-behavior.md) - Enemy AI targeting
+- [Input System](input-system.md) - Input handling and synchronization
