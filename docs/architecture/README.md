@@ -33,7 +33,7 @@ Client-server packet handling with observer support and map-scoped delivery.
 - Local loopback transport for in-editor testing
 - Observer system with map filtering
 
-**Status:** Implemented (local loopback, server input aggregation TODO)
+**Status:** Implemented (local loopback, server input aggregation complete)
 
 ### [Entity Management](entity-management.md)
 Centralized entity registration and lifecycle management across maps.
@@ -51,9 +51,9 @@ Player input capture and distribution with multiplayer synchronization.
 **Key Components:**
 - `PlayerInputHandler` - Input collection and forwarding
 - `PlayerInputMapper` - Input device mapping
-- `PlayersInputManager` - Server-side input aggregation (TODO)
+- `PlayersInputManager` - Server-side input aggregation and processing
 
-**Status:** Implemented (client-side, server aggregation incomplete)
+**Status:** Implemented (client-side and server-side input processing)
 
 ### [Animation System](animation-system.md)
 Character animation management with directional support.

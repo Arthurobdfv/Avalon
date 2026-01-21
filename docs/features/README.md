@@ -69,17 +69,18 @@ Complete combat system with player attacks, enemy targeting, and damage resoluti
 ---
 
 #### [Enemy Behavior](enemy-behavior.md)
-**Status:** In Progress (basic manager implemented)
+**Status:** Implemented (basic manager with multi-map support)
 
 Centralized enemy AI with targeting and aggro management.
 
 **Key Features:**
-- Tick-based behavior refresh
-- Aggressive targeting of nearest players
-- Range and vision checks
+- Combat tick-based behavior refresh via `BeforeCombatTickHandler`
+- Aggressive targeting of nearest players within vision range
+- Multi-map support via `MapManager.AvailableMaps`
+- Range and vision checks using `EntityExtensions.IsInRange`
 - Target assignment via `EnemyBehaviourManager`
 
-**Next Steps:** Multi-map support, advanced AI decision making
+**Next Steps:** Advanced AI decision making, target re-evaluation logic
 
 ---
 

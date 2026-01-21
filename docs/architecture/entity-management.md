@@ -37,7 +37,7 @@ The `PlayerEntitiesManager` provides map-aware helpers for player lookup and int
 - Provides convenience methods for common player-entity interactions
 - Integrates with combat system for target assignment
 
-**Location:** `Assets/Scripts/Character/Player/PlayerEntitiesManager.cs`
+**Location:** `Assets/Scripts/Character/EntityManagers/PlayerEntitiesManager.cs`
 
 ### EntityExtensions
 

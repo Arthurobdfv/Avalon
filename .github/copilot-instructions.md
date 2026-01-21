@@ -107,9 +107,9 @@ Conventions and coding notes
 - Guard editor-only code for `Assembly-CSharp-Editor`.
 
 Current unstaged summary (feature/Client_Server_Handling_Reestructure)
-- Added full TextMesh Pro default resources under `Assets/TextMesh Pro/` (fonts, materials, shaders, sprite assets, settings, line breaking tables) and documented in `docs/TextMeshProResources.md` with links from `README.md` and `FEATURES/FEATURES.md`.
-- Documented multiplayer architecture, manager responsibilities, and map-scoped entity snapshots (`docs/MultiplayerArchitecture.md`, `docs/feature-basic-entity-manager-and-combat.md`), including GlobalEntitiesManager, connection/observer flow, and map data notes.
-- Expanded combat docs to clarify tick hook order, multiplayer input flow, and server-authoritative limitations (`docs/CombatSystem.md`).
+- Added full TextMesh Pro default resources under `Assets/TextMesh Pro/` (fonts, materials, shaders, sprite assets, settings, line breaking tables).
+- Documented multiplayer architecture, manager responsibilities, and map-scoped entity snapshots (`docs/architecture/multiplayer-architecture.md`, `docs/architecture/entity-management.md`), including GlobalEntitiesManager, connection/observer flow, and map data notes.
+- Expanded combat docs to clarify tick hook order, multiplayer input flow, and server-authoritative limitations (`docs/architecture/combat-system.md`).
 - Refactored player input handling into client/server responsibilities:
   - `PlayerInputHandler` (client): builds and sends `PlayerInputState`, does NOT mutate entity state.
   - `PlayersInputManager` (server): receives, aggregates (one per client per cycle), and processes input states, mutating entity state.
@@ -117,7 +117,7 @@ Current unstaged summary (feature/Client_Server_Handling_Reestructure)
   - `DirectionEnumHelper`: shared static utility for Vector2 to DirectionEnum conversion.
 - Added comprehensive packets and handlers documentation (`docs/PacketsAndHandlers.md`).
 - Added Mermaid diagrams to all architecture documentation files.
-- Updated documentation in `docs/MultiplayerArchitecture.md`, `docs/CombatSystem.md`, `docs/feature-basic-entity-manager-and-combat.md`, `FEATURES/Character-Movement.md`, and `CHANGELOG.md`.
+- Updated documentation in `docs/architecture/multiplayer-architecture.md`, `docs/architecture/combat-system.md`, `docs/architecture/entity-management.md`, `docs/features/character-movement.md`, and `CHANGELOG.md`.
 
 ## Session Summary (Copilot Context)
 

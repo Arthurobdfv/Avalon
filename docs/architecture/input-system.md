@@ -45,24 +45,22 @@ The `PlayerInputMapper` maps raw input events to game actions.
 - Sprint (Shift/Gamepad button)
 - Interact (E/Gamepad button)
 
-**Location:** `Assets/Scripts/Input/PlayerInputMapper.cs`
+**Location:** `Assets/Scripts/Input/PlayerInput/PlayerInputMapper.cs`
 
 ### PlayersInputManager (Server-Side)
 
 Server-side aggregator for incoming `PlayerInputState` packets from all connected clients.
 
-**Intended Responsibilities:**
-- Receive `PlayerInputState` packets from clients
-- Validate and sanitize client input
-- Apply input to authoritative player entities
-- Broadcast updated player state to clients
+**Responsibilities:**
+- Receives `PlayerInputState` packets from clients via `ServerPacketHandler`
+- Stores pending inputs in a dictionary keyed by `ClientId` (one per client per cycle)
+- Processes all pending inputs once per `FixedUpdate` cycle
+- Applies movement and interaction logic on the server, mutating entity state
+- Uses `DirectionEnumHelper` for Vector2 to DirectionEnum conversion
 
-**Current Status:**
-- Registration exists in server packet handlers
-- Handler implementation is not yet complete (`NotImplementedException`)
-- This is a known limitation of the current multiplayer implementation
+**Current Status:** Implemented
 
-**Location:** `Assets/Scripts/Input/PlayersInputManager.cs`
+**Location:** `Assets/Scripts/Multiplayer/Server/PlayersInputManager.cs`
 
 ## Input State Packet
 
@@ -100,7 +98,7 @@ graph TD
     PIM --> PIH[PlayerInputHandler]
     PIH --> |Local Mode| APD[Apply to Player Directly]
     PIH --> |Multiplayer Mode| CCLM[ClientCommunicationLayerManager]
-    CCLM --> SPIM[Server: PlayersInputManager TODO]
+    CCLM --> SPIM[Server: PlayersInputManager]
     SPIM --> AAP[Apply to Authoritative Player]
     AAP --> BUS[Broadcast Updated State]
 ```
@@ -114,19 +112,18 @@ graph TD
 
 ## Known Limitations
 
-- Server-side input aggregation (`PlayersInputManager`) is not yet implemented
 - No input buffering or prediction for multiplayer
 - No anti-cheat validation on server side
 - Input mapped to fixed update tick, may feel less responsive than per-frame
 
 ## Future Improvements
 
-- Implement server-side input processing in `PlayersInputManager`
 - Add client-side prediction for smoother multiplayer feel
 - Implement input buffering for combo systems
 - Add rebindable controls UI
 - Support for multiple input devices simultaneously
 - Input replay system for testing and debugging
+- Add anti-cheat validation on server side
 
 ## TODOs in Code
 
