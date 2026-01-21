@@ -3,6 +3,40 @@
 ## Overview
 This document summarizes the current multiplayer architecture, packet flow, and runtime utilities. It focuses on the client/server handler restructure and observer support.
 
+## Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph Client
+        PIH[PlayerInputHandler]
+        CCL[ClientCommunicationLayerManager]
+        CPH[ClientPacketHandler]
+        ES[EntitySpawner]
+        LCS[LocalClientPacketSender]
+    end
+
+    subgraph Server
+        SCL[ServerCommunicationLayerManager]
+        SPH[ServerPacketHandler]
+        PIM[PlayersInputManager]
+        GEM[GlobalEntitiesManager]
+        LSR[LocalServerPacketReceiver]
+        LSS[LocalServerPacketSender]
+    end
+
+    PIH -->|PlayerInputState| CCL
+    CCL -->|Send| LCS
+    LCS -->|Forward| LSR
+    LSR -->|OnPacketReceived| SCL
+    SCL -->|Handle| SPH
+    SPH -->|Dispatch| PIM
+    PIM -->|Mutate| GEM
+    GEM -->|EntitySpawnPacket| SCL
+    SCL -->|SendMap| LSS
+    LSS -->|Forward| CPH
+    CPH -->|Dispatch| ES
+```
+
 ## Core packet handling
 - `AvalonPacketHandler`: base MonoBehaviour that maps packet types to handlers (`RegisterHandler`, `UnregisterHandler`, `Handle`).
 - `ClientPacketHandler` / `ServerPacketHandler`: thin wrappers over `AvalonPacketHandler` providing client/server registration helpers.
@@ -38,12 +72,47 @@ This document summarizes the current multiplayer architecture, packet flow, and 
   - Editor utility to create a local player (`Alt+P`) or observer (`Alt+O`). Handles observer connection handshake, sends the initial map subscription, and spawns prefabs for local testing.
 
 ## Player input flow
-- **PlayerInputHandler**
+
+```mermaid
+sequenceDiagram
+    participant Client as Client (PlayerInputHandler)
+    participant CCL as ClientCommunicationLayerManager
+    participant Server as Server (PlayersInputManager)
+    participant GEM as GlobalEntitiesManager
+    participant ES as EntitySpawner
+
+    Note over Client: FixedUpdate tick
+    Client->>Client: Collect input (look, move, sprint, interact)
+    Client->>Client: Build PlayerInputState
+    Client->>CCL: Send(PlayerInputState)
+    CCL->>Server: Forward via transport
+
+    Note over Server: FixedUpdate tick
+    Server->>Server: Store in pendingInputs[ClientId]
+    Server->>Server: ProcessAllPendingInputs()
+    Server->>Server: Apply movement/interaction
+    Server->>Server: Mutate entity state
+
+    Note over GEM: LateUpdate tick
+    GEM->>GEM: Build EntitySpawnPacket per map
+    GEM->>ES: SendMap(EntitySpawnPacket)
+    ES->>ES: Update entity positions/directions/movement
+```
+
+- **PlayerInputHandler (client)**
   - Collects look/move/sprint/interact input into a `PlayerInputState` packet.
-  - When multiplayer is enabled, sends `PlayerInputState` via `ClientCommunicationLayerManager` each fixed tick and processes server-fed states when present.
-  - When multiplayer is disabled, applies the state locally.
+  - Sends `PlayerInputState` via `ClientCommunicationLayerManager` each fixed tick.
+  - Does NOT mutate entity state directly; entity updates come from `EntitySpawnPacket`.
 - **PlayersInputManager (server)**
-  - Intended server-side aggregator for incoming `PlayerInputState` packets. Registration exists, but the handler is not yet implemented (`NotImplementedException`). This is a current limitation.
+  - Receives `PlayerInputState` packets from clients via `ServerPacketHandler`.
+  - Stores pending inputs in a dictionary keyed by `ClientId`, ensuring only the latest input per player is processed per cycle (handles multiple inputs arriving between ticks).
+  - Processes all pending inputs once per `FixedUpdate` cycle.
+  - Applies movement and interaction logic on the server, mutating entity state.
+  - Entity state is broadcast to clients via `EntitySpawnPacket` from `GlobalEntitiesManager`.
+- **EntitySpawner (client)**
+  - Receives `EntitySpawnPacket` from server.
+  - Spawns new entities and updates existing entity positions, directions, and movement states.
+  - This is the authoritative source of entity state on the client.
 
 ## Map-scoped packet delivery
 - `ServerCommunicationLayerManager.RegisterObserver<T>` stores predicates per packet type to decide which observers should receive a packet.
@@ -66,9 +135,19 @@ This document summarizes the current multiplayer architecture, packet flow, and 
 - Added client/server packet handler wrappers, communication layer managers, and local loopback sender/receiver implementations.
 - Added observer connection and map subscription flow with packet filtering per map.
 - Added utilities for testing connections (`ClientTestSend`) and observer commands (`ObserverCommandInput`).
-- Introduced player input packet flow; server-side aggregation remains TODO in `PlayersInputManager`.
+- Refactored player input handling into client/server responsibilities:
+  - `PlayerInputHandler` (client): builds and sends `PlayerInputState`, does NOT mutate entity state.
+  - `PlayersInputManager` (server): receives, aggregates (one per client per cycle), and processes input states.
+  - `EntitySpawner` (client): receives `EntitySpawnPacket` and applies entity state (position, direction, movement).
+  - `DirectionEnumHelper`: shared static utility for Vector2 to DirectionEnum conversion.
 
 ## TODOs / Limitations
-- Implement `PlayersInputManager.HandlePlayerInputState` to process and apply player inputs server-side.
 - Replace local-loopback transport with network transport implementations when available.
 - Harden observer registration and cleanup to avoid stale observer entries when clients disconnect.
+- Combat is still local/instance-authoritative; server-side combat resolution is not yet implemented.
+
+## See Also
+
+- [Packets and Handlers Reference](PacketsAndHandlers.md) - Comprehensive reference of all packets and their handlers.
+- [Combat System](CombatSystem.md) - Combat tick system and damage resolution.
+- [Entity Manager and Combat](feature-basic-entity-manager-and-combat.md) - Entity management architecture.

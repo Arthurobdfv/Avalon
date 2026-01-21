@@ -1,13 +1,49 @@
-Feature: Basic Entity Manager and Combat Flow
+# Feature: Basic Entity Manager and Combat Flow
 
-Overview
+## Overview
 
 This feature introduces a minimal entity management system, player input
 handling, and a simple timed combat flow to bootstrap gameplay
 interactions. It centralizes entity operations and provides a starting
 point for player/enemy interactions.
 
-Key changes
+## Entity Management Architecture
+
+```mermaid
+graph TB
+    subgraph Server Side
+        GEM[GlobalEntitiesManager]
+        PEM[PlayerEntitiesManager]
+        EBM[EnemyBehaviourManager]
+        CM[CombatManager]
+        PIM[PlayersInputManager]
+    end
+
+    subgraph Client Side
+        PIH[PlayerInputHandler]
+        ES[EntitySpawner]
+    end
+
+    subgraph Entities
+        PC[PlayerCharacter]
+        EC[EnemyCharacter]
+    end
+
+    PIH -->|PlayerInputState| PIM
+    PIM -->|Mutate| PC
+    PIM -->|Interact| PEM
+    PEM -->|Find Target| EC
+
+    GEM -->|Register| PC
+    GEM -->|Register| EC
+    GEM -->|EntitySpawnPacket| ES
+
+    EBM -->|Target Selection| EC
+    CM -->|Combat Ticks| PC
+    CM -->|Combat Ticks| EC
+```
+
+## Key changes
 
 - `GlobalEntitiesManager`: centralizes entity registration across maps, spawns players on connect, listens for respawn/despawn, and (when multiplayer is enabled) publishes map-scoped `EntitySpawnPacket` snapshots through `ServerCommunicationLayerManager.SendMap` each `LateUpdate`.
 - `PlayerEntitiesManager`: map-aware helpers for player lookup and simple interaction targeting (find nearest enemy on the player’s map).
@@ -27,14 +63,25 @@ Key changes
   `SourceCharacter.BaseStats.AttackDamage` from the target's
   `CurrentHealth`.
 
-Motivation
+## Motivation
 
 Having a small, centralized entity manager and clear input and combat
 flow makes it easier to iterate on gameplay and prepare for future
 extensions (for example, separating combat into a dedicated `Combat
 Manager` for multiplayer support).
 
-Event-driven combat
+## Event-driven combat
+
+```mermaid
+flowchart LR
+    subgraph Attack Flow
+        A[CombatCharacter] -->|_currentTime > AttackSpeed| B{In Range?}
+        B -->|Yes| C[OnPerformCombatHandler.Invoke]
+        C --> D[CombatManager.OnPerformCombat]
+        D --> E[target.CurrentHealth -= damage]
+        E --> F[OnHealthChangeHandler.Invoke]
+    end
+```
 
 Combat is implemented with a simple event-based approach:
 `CombatCharacter` raises a `OnPerformCombatHandler` event (with
@@ -72,7 +119,7 @@ Notes and TODOs
 - Consider moving combat responsibilities to a dedicated server-side
   system or a more feature-complete `CombatManager` for authoritative
   multiplayer.
-- Multiplayer: entity replication is currently a periodic snapshot via `EntitySpawnPacket` (per map) from `GlobalEntitiesManager`; input aggregation on the server (`PlayersInputManager`) and authoritative combat are still planned.
+- Multiplayer: entity replication is currently a periodic snapshot via `EntitySpawnPacket` (per map) from `GlobalEntitiesManager`. Input aggregation on the server (`PlayersInputManager`) is now implemented; authoritative combat is planned.
 
 Files changed
 

@@ -6,4 +6,6 @@ using UnityEngine;
 public class AssetLookupTable : ScriptableObject
 {
     public List<EnemyAssetData> EnemyAssetDataList;
+
+    public List<PlayerAssetData<PlayerBaseAssetEnum>> PlayerAssetDataList;
 }

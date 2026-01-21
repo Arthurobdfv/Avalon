@@ -6,6 +6,31 @@ All notable changes to this repository will be documented in this file.
 
 ### Features & Updates
 
+- Player input handling refactored into client/server split with proper authority separation
+  - `PlayerInputHandler` (client): builds `PlayerInputState` from raw input, sends to server. Does NOT mutate entity state.
+  - `PlayersInputManager` (server): receives and aggregates input per client (one per cycle), processes movement/interaction, mutates entity state.
+  - `EntitySpawner` (client): receives `EntitySpawnPacket` from server, applies authoritative entity state (position, direction, movement).
+  - `DirectionEnumHelper`: shared static utility for Vector2 to DirectionEnum conversion.
+  - Updated documentation across `docs/MultiplayerArchitecture.md`, `docs/CombatSystem.md`, `docs/feature-basic-entity-manager-and-combat.md`, and `FEATURES/Character-Movement.md`.
+
+- TCP Relay Server (new separate project - outside Unity project)
+  - Created `../AvalonRelayServer/` - .NET 8 TCP relay server for NAT traversal
+  - Room-based packet routing with game server designation
+  - Flexible targeting (broadcast, game server only, specific clients)
+  - Heartbeat/keepalive with automatic timeout
+  - Length-prefixed JSON packet serialization
+  - Docker support for cloud deployment
+  - `AvalonShared` library targets netstandard2.1 for Unity compatibility
+
+### Documentation
+
+- Added `docs/PacketsAndHandlers.md`: comprehensive reference of all packets, handlers, and transport interfaces with Mermaid diagrams.
+- Added Mermaid diagrams to feature documentation:
+  - `docs/MultiplayerArchitecture.md`: architecture overview and player input flow sequence diagram.
+  - `docs/CombatSystem.md`: class diagram and combat tick flow sequence diagram.
+  - `docs/feature-basic-entity-manager-and-combat.md`: entity management architecture and attack flow diagrams.
+  - `FEATURES/Character-Movement.md`: input flow sequence diagram and architecture graph.
+
 - SpriteSheet ? Animations
   - Moved `CharacterName` field into `AnimationSetDefinition` for better model locality and usability.
   - Cleanup and fixes in the sprite-sheet parsing pipeline (`SpriteSheetParser` and editor integration).

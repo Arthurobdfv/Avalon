@@ -1,11 +1,102 @@
 # Combat System
 
-Overview
+## Overview
 - A lightweight combat system implemented for characters.
 - Main classes: `CombatManager`, `CombatCharacter`, `CombatBaseStats`, `EnemyCombatBaseStats`, `PlayerCharacter`, `EnemyCharacter`.
-- Multiplayer note: combat is presently local/authoritative in-scene. Player input packets (`PlayerInputState`) are routed through the multiplayer layer, but combat resolution still happens locally on the instance with a `CombatManager`. Server-side aggregation (`PlayersInputManager`) is a TODO.
+- Multiplayer note: combat is presently local/authoritative in-scene. Player input packets (`PlayerInputState`) are routed through the multiplayer layer and processed server-side by `PlayersInputManager`, but combat resolution still happens locally on the instance with a `CombatManager`. Server-authoritative combat is a future goal.
 
-Components
+## Combat System Architecture
+
+```mermaid
+classDiagram
+    class Character {
+        +DirectionEnum currentDirection
+        +int currentMovement
+        +SetDirection(direction)
+        +SetMovement(movement)
+    }
+
+    class CombatCharacter {
+        +CombatBaseStats BaseStats
+        +CombatCharacter Target
+        +float CurrentHealth
+        +bool MarkedForDeath
+        +string Id
+        +SetTarget(target)
+        #OnCombatTick(delta)
+        +OnHealthChangeHandler
+        +OnPerformCombatHandler$
+        +OnHealthReachZeroHandler$
+    }
+
+    class PlayerCharacter {
+        #OnCombatTick(delta)
+    }
+
+    class EnemyCharacter {
+        +EnemyCombatBaseStats BaseStats
+        #OnCombatTick(delta)
+    }
+
+    class CombatBaseStats {
+        +float Health
+        +float AttackDamage
+        +float AttackSpeed
+        +float AttackRange
+        +float MovementSpeed
+    }
+
+    class EnemyCombatBaseStats {
+        +bool Aggressive
+        +float VisionRange
+    }
+
+    class CombatManager {
+        +int _tickInterval
+        +CombatTickHandler$
+        +BeforeCombatTickHandler$
+        +CombatTickEndHandler$
+        -OnPerformCombat()
+    }
+
+    Character <|-- CombatCharacter
+    CombatCharacter <|-- PlayerCharacter
+    CombatCharacter <|-- EnemyCharacter
+    CombatBaseStats <|-- EnemyCombatBaseStats
+    CombatCharacter --> CombatBaseStats : uses
+    EnemyCharacter --> EnemyCombatBaseStats : uses
+    CombatManager --> CombatCharacter : dispatches ticks
+```
+
+## Combat Tick Flow
+
+```mermaid
+sequenceDiagram
+    participant CM as CombatManager
+    participant EBM as EnemyBehaviourManager
+    participant CC as CombatCharacter
+    participant Target as Target Character
+
+    Note over CM: FixedUpdate (every _tickInterval)
+    CM->>CM: BeforeCombatTickHandler.Invoke()
+    EBM->>EBM: Refresh enemy targeting/aggro
+
+    CM->>CC: CombatTickHandler.Invoke(prev, curr, delta)
+    CC->>CC: _currentTime += delta
+
+    alt Has Target and Ready to Attack
+        CC->>CC: Check _currentTime > AttackSpeed
+        CC->>CC: Check IsInRange(Target, AttackRange)
+        CC->>CM: OnPerformCombatHandler.Invoke(args)
+        CM->>Target: target.CurrentHealth -= damage
+        Target->>Target: OnHealthChangeHandler.Invoke()
+        CC->>CC: _currentTime = 0
+    end
+
+    CM->>CM: CombatTickEndHandler.Invoke()
+```
+
+## Components
 - `CombatBaseStats` (ScriptableObject)
   - Fields: `Health`, `AttackDamage`, `AttackSpeed`, `AttackRange`, `MovementSpeed`.
   - Create new instances via Unity menu: `Character/Combat Base Stats`.
@@ -53,14 +144,14 @@ Behavior notes
 - Attack timing: `CombatCharacter` accumulates `delta` from ticks and compares to `AttackSpeed`. If over the threshold and within `AttackRange`, an attack is triggered.
 - Damage application is currently immediate inside `CombatManager.OnPerformCombat`.
 - Tick order per interval: `BeforeCombatTickHandler` -> `CombatTickHandler` -> `CombatTickEndHandler`, executed when `_currentTickIndex >= _tickInterval`.
-- Multiplayer flow: the combat loop is local today. Clients send `PlayerInputState` via `ClientCommunicationLayerManager`; when multiplayer is enabled, the local instance still resolves combat. A server-side `PlayersInputManager` is planned to aggregate inputs and drive an authoritative combat loop before forwarding results to clients.
+- Multiplayer flow: Player input is now handled via a client/server split. Clients send `PlayerInputState` via `ClientCommunicationLayerManager`; the server-side `PlayersInputManager` receives, aggregates (one per client per cycle), processes movement/interaction, and echoes the state back for client reconciliation. Combat tick resolution remains local; server-authoritative combat is planned.
 
 TODOs / Known limitations
 - No explicit death handling besides clearing the target in `OnHealthReachZero()` - hook animation and removal logic.
 - Attack resolution is immediate and simple; consider adding hit/impact animations, projectiles, or attack resolution systems.
 - No combat UI or sound behavior wired - subscribe to events to add these features.
 - Tick system is simple and tied to `FixedUpdate` frequency. Consider decoupling for deterministic simulations or multiplayer.
-- Combat is not yet server-authoritative: no server-side processing of `PlayerInputState` and no replication of combat outcomes to clients. `PlayersInputManager` exists but has an unimplemented handler.
+- Combat is not yet server-authoritative: combat tick resolution is local. `PlayersInputManager` now handles input aggregation; server-authoritative combat outcomes remain a future goal.
 
 Files of interest
 - `Assets/Scripts/Character/Combat/CombatManager.cs`
