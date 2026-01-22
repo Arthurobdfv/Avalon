@@ -1018,7 +1018,8 @@ PrefabInstance:
       propertyPath: clientCommunicationLayerManager
       value: 
       objectReference: {fileID: 718729112173986877}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2092418580484397296, guid: 7187c096a48d3e94daff039130ca0d43, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

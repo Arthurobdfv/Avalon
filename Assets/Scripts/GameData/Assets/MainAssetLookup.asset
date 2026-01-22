@@ -15,3 +15,6 @@ MonoBehaviour:
   EnemyAssetDataList:
   - {fileID: 11400000, guid: b57b2b3c49b3a92488dd766af76ac456, type: 2}
   - {fileID: 11400000, guid: dc1ad562a0419db4b8f88819a23b0248, type: 2}
+  PlayerBaseAssetDataList:
+  - {fileID: 11400000, guid: a2285bf80d8cb5d47baf5b89eca635db, type: 2}
+  - {fileID: 11400000, guid: 193ff806f071c2647902fb54f39d1d5a, type: 2}

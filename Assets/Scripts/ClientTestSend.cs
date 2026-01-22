@@ -1,29 +1,38 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class ClientTestSend : MonoBehaviour
 {
-    private IAvalonClientPacketSender _packetSender;
     [SerializeField] private GameObject _observerPrefab;
     [SerializeField] private GameObject _localClientPrefab;
+    private ClientCommunicationLayerManager _clientCommunicationLayerManager;
     private GameObject clientInstance = null;
 
-    void Start()
+    private ClientCommunicationLayerManager ClientCommunicationManager
     {
-        _packetSender = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, sortMode: FindObjectsSortMode.None)
-            .OfType<IAvalonClientPacketSender>()
-            .FirstOrDefault();
+        get
+        {
+            if (_clientCommunicationLayerManager == null)
+            {
+                _clientCommunicationLayerManager = FindAnyObjectByType<ClientCommunicationLayerManager>();
+            }
+            return _clientCommunicationLayerManager;
+        }
     }
 
-    private ClientPacketHandler _clientPacketHandler;
 
     // Update is called once per frame
     void Update()
     {
+        if (clientInstance != null)
+        {
+            HandleClientCommands();
+        }
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
-            if(clientInstance != null)
+            if (clientInstance != null)
             {
                 return;
             }
@@ -35,7 +44,7 @@ public class ClientTestSend : MonoBehaviour
                     PlayerName = "Test Player",
                     AuthToken = "abc123"
                 };
-                _packetSender.Send(packet);
+                ClientCommunicationManager.Send(packet);
                 clientInstance = Instantiate(_localClientPrefab);
             }
             if (Input.GetKeyDown(KeyCode.O) && string.IsNullOrWhiteSpace(LocalServerPacketSender.CurrentObserverId))
@@ -44,14 +53,30 @@ public class ClientTestSend : MonoBehaviour
                 {
                     return;
                 }
-                if (_clientPacketHandler == null)
-                {
-                    _clientPacketHandler = FindAnyObjectByType<ClientPacketHandler>();
-                }
-                _clientPacketHandler.RegisterClientHandler<ConnectObserverPacket>(ObserverConnectionCallback);
+                ClientCommunicationManager.Handler.RegisterClientHandler<ConnectObserverPacket>(ObserverConnectionCallback);
                 ConnectObserverPacket connectPacket = new ConnectObserverPacket();
-                _packetSender.Send(connectPacket);
+                ClientCommunicationManager.Send(connectPacket);
             }
+        }
+    }
+
+    private void HandleClientCommands()
+    {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            var playerEquipmentPacket = new PlayerEquipmentPacket()
+            {
+                PlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_ADVENTURER_BASE_01
+            };
+            ClientCommunicationManager.Send(playerEquipmentPacket);
+        }
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            var playerEquipmentPacket = new PlayerEquipmentPacket()
+            {
+                PlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_FEMALE_BASE_01
+            };
+            ClientCommunicationManager.Send(playerEquipmentPacket);
         }
     }
 
@@ -63,12 +88,8 @@ public class ClientTestSend : MonoBehaviour
         };
         observeMapPacket.SetClientId(packet.ObserverId);
         LocalServerPacketSender.CurrentObserverId = packet.ObserverId;
-        _packetSender.Send(observeMapPacket);
-        if (_clientPacketHandler == null)
-        {
-            _clientPacketHandler = FindAnyObjectByType<ClientPacketHandler>();
-        }
-        _clientPacketHandler.UnregisterClientHandler<ConnectObserverPacket>();
+        ClientCommunicationManager.Send(observeMapPacket);
+        ClientCommunicationManager.Handler.UnregisterClientHandler<ConnectObserverPacket>();
         clientInstance = Instantiate(_observerPrefab);
     }
 }

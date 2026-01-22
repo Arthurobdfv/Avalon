@@ -31,6 +31,20 @@ public class GlobalEntitiesManager : MonoBehaviour
         CombatCharacter.OnHealthReachZeroHandler += OnEntityDeath;
         RespawnManager.EntitySpawnedHandler += HandleEntitySpawned;
         RespawnManager.EntityDespawnedHandler += HandleEntityDespawned;
+        ServerCommunicationLayerManager.Handler.RegisterServerHandler<PlayerEquipmentPacket>(OnPlayerEquipChange);
+    }
+
+    private void OnPlayerEquipChange(PlayerEquipmentPacket packet)
+    {
+        var playerCharacter = allEntities[packet.ClientId] as PlayerCharacter;
+        if (playerCharacter != null)
+        {
+            playerCharacter.Equipment.BaseBody = packet.PlayerBaseAsset;
+        }
+        else
+        {
+            throw new Exception($"Player with ID {packet.ClientId} not found in GlobalEntitiesManager or is not assignable to PlayerCharacter.");
+        }
     }
 
     private void HandleEntityDespawned(RespawnManager.SpawnEventArgs args)
@@ -52,6 +66,8 @@ public class GlobalEntitiesManager : MonoBehaviour
         CombatCharacter.OnHealthReachZeroHandler -= OnEntityDeath;
         RespawnManager.EntitySpawnedHandler -= HandleEntitySpawned;
         RespawnManager.EntityDespawnedHandler -= HandleEntityDespawned;
+        serverCommunicationLayerManager.Handler.UnregisterServerHandler<PlayerEquipmentPacket>();
+
     }
 
     private void OnEntityDeath(CombatCharacter character)
@@ -87,13 +103,13 @@ public class GlobalEntitiesManager : MonoBehaviour
         foreach (var map in MapManager.AvailableMaps)
         {
             var currentMap = map; // TODO: Get current map from player or game state
-            var playersOnMap = PlayerEntitiesManager.PlayersOnMap(currentMap).ToDictionary(x => x.Id, x => new EntityInfo() { EntityType = EntityTypeEnum.Player, Position = x.transform.position, Rotation = x.CurrentDiretion, Movement = x.CurrentMovement });
-            var enemiesOnMap = EnemyBehaviourManager.EnemiesOnMap(currentMap).ToDictionary(x => x.Id, x => new EntityInfo() { EntityType = EntityTypeEnum.Enemy, Position = x.transform.position, Rotation = x.CurrentDiretion, EntityAssetId = x.EntityAssedId, Movement = x.CurrentMovement });
+            var playersOnMap = PlayerEntitiesManager.PlayersOnMap(currentMap).ToDictionary(x => x.Id, x => (EntityInfo)new PlayerEntityInfo() { EntityType = EntityTypeEnum.Player, Position = x.transform.position, Rotation = x.CurrentDiretion, Movement = x.CurrentMovement, Equipment = x.Equipment });
+            var enemiesOnMap = EnemyBehaviourManager.EnemiesOnMap(currentMap).ToDictionary(x => x.Id, x => (EntityInfo)new EnemyEntityInfo() { EntityType = EntityTypeEnum.Enemy, Position = x.transform.position, Rotation = x.CurrentDiretion, Movement = x.CurrentMovement, EntityAssetId = x.EntityAssetId });
 
-            var allEntities = playersOnMap.Concat(enemiesOnMap).ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value);
+            Dictionary<string, EntityInfo> entitiesOnMap = playersOnMap.Concat(enemiesOnMap).ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value);
             var packet = new EntitySpawnPacket()
             {
-                Entities = allEntities,
+                Entities = entitiesOnMap,
                 MapId = currentMap
             };
 

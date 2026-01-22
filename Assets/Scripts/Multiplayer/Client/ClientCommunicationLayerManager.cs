@@ -6,12 +6,13 @@ public class ClientCommunicationLayerManager : MonoBehaviour
     IAvalonClientPacketSender _packetSender;
     IAvalonPacketClientReceiver _packetReceiver;
 
-    ClientPacketHandler _packetHandler;
+    ClientPacketHandler _packetHandler = new();
+
+    public ClientPacketHandler Handler => _packetHandler;
 
     private void Awake()
     {
         _packetSender = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonClientPacketSender>().FirstOrDefault() ?? throw new System.NullReferenceException("No IAvalonClientPacketSender found");
-        _packetHandler = FindObjectOfType<ClientPacketHandler>() ?? throw new System.NullReferenceException("No ClientPacketHandler found");
     }
     public void Send(AvalonPacket packet)
     {

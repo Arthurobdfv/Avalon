@@ -9,13 +9,12 @@ public class ServerCommunicationLayerManager : MonoBehaviour
     IAvalonPacketServerSender _packetSender;
     IAvalonPacketServerReceiver _packetReceiver;
 
-    ServerPacketHandler _packetHandler;
+    readonly ServerPacketHandler _packetHandler = new();
 
     public ServerPacketHandler Handler => _packetHandler;
 
     private void Awake()
     {
-        _packetHandler = FindObjectOfType<ServerPacketHandler>() ?? throw new NullReferenceException("No ServerPacketHandler found");
         _packetSender = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerSender>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerSender found");
         // Change this to service provider fetching since network sender might not be monobehaviour in future
         _packetReceiver = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerReceiver>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerReceiver found");
@@ -81,7 +80,7 @@ public class ServerCommunicationLayerManager : MonoBehaviour
         }
     }
 
-    private Dictionary<Type, List<ObserverInfo>> _packetObserversCache = new();
+    private readonly Dictionary<Type, List<ObserverInfo>> _packetObserversCache = new();
 
     private class ObserverInfo
     {

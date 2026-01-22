@@ -8,7 +8,7 @@ public class MultiplayerConnectionManager : MonoBehaviour
     private ServerCommunicationLayerManager _serverCommunicationManager;
     public GlobalEntitiesManager GlobalEntitiesManager;
     private Dictionary<string, ObserverData> Observers = new();
-    private void OnEnable()
+    private void Start()
     {
         if (_serverCommunicationManager == null)
         {
@@ -67,7 +67,7 @@ public class MultiplayerConnectionManager : MonoBehaviour
         _serverCommunicationManager.Send(response);
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         _serverCommunicationManager.Handler.UnregisterServerHandler<ConnectPlayerPacket>();
         _serverCommunicationManager.Handler.UnregisterServerHandler<ConnectObserverPacket>();
@@ -78,6 +78,12 @@ public class MultiplayerConnectionManager : MonoBehaviour
     {
         Debug.Log($"Player connected: {packet.PlayerName}");
         GlobalEntitiesManager.OnPlayerConnect(packet);
+        var playerStartEquip = new PlayerEquipmentPacket()
+        {
+            PlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_FEMALE_BASE_01
+        };
+        playerStartEquip.SetClientId(packet.PlayerId);
+        _serverCommunicationManager.Send(playerStartEquip);
     }
 
     private class ObserverData
