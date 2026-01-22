@@ -57,7 +57,7 @@ public class RespawnManager : MonoBehaviour
                         if (entityLookupDict.TryGetValue(entityID, out var prefab))
                         {
                             var spawnedEnemy = Instantiate(prefab, spawnPoint.SpawnTransform, Quaternion.identity).GetComponent<EnemyCharacter>();
-                            spawnedEnemy.EntityAssedId = entityID;
+                            spawnedEnemy.EntityAssetId = entityID;
                             mapEntry.Value[spawnPoint] = (spawnedEnemy, 0f);
                             Debug.Log($"Respawned {entityID} at {spawnPoint.SpawnTransform}");
                             var spawnedEntityId = $"en_{spawnedEnemy.GetInstanceID().ToString()}";

@@ -24,12 +24,7 @@ public class PlayersInputManager : MonoBehaviour
             _serverCommunicationLayerManager = FindFirstObjectByType<ServerCommunicationLayerManager>();
         }
 
-        if (_serverPacketHandler == null)
-        {
-            _serverPacketHandler = FindFirstObjectByType<ServerPacketHandler>();
-        }
-
-        _serverPacketHandler?.RegisterServerHandler<PlayerInputState>(HandlePlayerInputState);
+        _serverCommunicationLayerManager.Handler?.RegisterServerHandler<PlayerInputState>(HandlePlayerInputState);
     }
 
     private void OnDisable()

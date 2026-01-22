@@ -108,6 +108,8 @@ Conventions and coding notes
 - Prefer existing helpers and avoid new third-party dependencies unless necessary.
 - Guard editor-only code for `Assembly-CSharp-Editor`.
 
+- Asset change guidance: When generating commit messages or analysing/updating documentation, automation should ignore Unity asset-only changes such as `.anim`, `.controller`, and `.meta` files unless the change is explicitly described as a content or feature change.
+
 Current unstaged summary (feature/Client_Server_Handling_Reestructure)
 - Added full TextMesh Pro default resources under `Assets/TextMesh Pro/` (fonts, materials, shaders, sprite assets, settings, line breaking tables).
 - Documented multiplayer architecture, manager responsibilities, and map-scoped entity snapshots (`docs/architecture/multiplayer-architecture.md`, `docs/architecture/entity-management.md`), including GlobalEntitiesManager, connection/observer flow, and map data notes.
@@ -120,6 +122,8 @@ Current unstaged summary (feature/Client_Server_Handling_Reestructure)
 - Added comprehensive packets and handlers documentation (`docs/PacketsAndHandlers.md`).
 - Added Mermaid diagrams to all architecture documentation files.
 - Updated documentation in `docs/architecture/multiplayer-architecture.md`, `docs/architecture/combat-system.md`, `docs/architecture/entity-management.md`, `docs/features/character-movement.md`, and `CHANGELOG.md`.
+
+<!-- Note: previous detailed file list removed. This document should only instruct automation to ignore specific Unity asset-only files when requested; do not include working-tree file lists here. -->
 
 ## Session Summary (Copilot Context)
 

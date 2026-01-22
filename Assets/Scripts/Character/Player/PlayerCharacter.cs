@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerCharacter : CombatCharacter
 {
+    [SerializeField] public EquipmentData Equipment;
     private void Start()
     {
         _currentHealth = BaseStats.Health;
@@ -28,5 +29,11 @@ public class PlayerCharacter : CombatCharacter
                 _currentTime = 0f;
             }
         }
+    }
+
+    [Serializable]
+    public class EquipmentData
+    {
+        public PlayerBaseAssetEnum BaseBody;
     }
 }

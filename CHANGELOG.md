@@ -13,6 +13,13 @@ All notable changes to this repository will be documented in this file.
 - `DirectionEnumHelper`: shared static utility for Vector2 to DirectionEnum conversion.
 - Updated documentation across `docs/architecture/multiplayer-architecture.md`, `docs/architecture/combat-system.md`, `docs/architecture/entity-management.md`, and `docs/features/character-movement.md`.
 
+- Player UI and equipment sync
+  - Added `PlayerUI` script and associated player UI prefab assets (in-scene wiring and data placeholders).
+  - Added `PlayerEquipmentPacket` to support equipment synchronization across clients/servers.
+
+- Cleanup
+  - Removed `ClientEntityStateHandler` (client-side entity state handler was deleted as part of the input/authority refactor).
+
 - TCP Relay Server (new separate project - outside Unity project)
   - Created `../AvalonRelayServer/` - .NET 8 TCP relay server for NAT traversal
   - Room-based packet routing with game server designation

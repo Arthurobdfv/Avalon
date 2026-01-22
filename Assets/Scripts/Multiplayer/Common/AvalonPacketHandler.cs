@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 // This class will receiva all metadata + domain packet and handle them accordingly on the server side.
-public class AvalonPacketHandler : MonoBehaviour
+public class AvalonPacketHandler
 {
     private Dictionary<Type, Action<AvalonPacket>> PacketHandlers = new Dictionary<Type, Action<AvalonPacket>>();
     // Start is called before the first frame update

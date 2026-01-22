@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EntityUIPrefab: {fileID: 7443699417656334174, guid: 58d617ad1f782f24ea8aaee05241438e, type: 3}
-  CharacterPrefab: {fileID: 8549234339228444688, guid: 94bb0131430036d46863cdbbaa9e3262, type: 3}
+  CharacterPrefab: {fileID: 8771937686904627774, guid: 94bb0131430036d46863cdbbaa9e3262, type: 3}

@@ -2,19 +2,26 @@ using UnityEngine;
 
 public class MapDataSpawner : MonoBehaviour
 {
-    private ClientPacketHandler _clientPacketHandler;
+    private ClientCommunicationLayerManager _clientCommunicationLayerManager;
+    private ClientCommunicationLayerManager ClientCommunicationLayerManager
+    {
+        get
+        {
+            if (_clientCommunicationLayerManager == null)
+            {
+                _clientCommunicationLayerManager = FindObjectOfType<ClientCommunicationLayerManager>();
+            }
+            return _clientCommunicationLayerManager;
+        }
+    }
     private void OnEnable()
     {
-        if(_clientPacketHandler == null)
-        {
-            _clientPacketHandler = FindObjectOfType<ClientPacketHandler>();
-        }
-        _clientPacketHandler.RegisterClientHandler<MapDataSpawnPacket>(SpawnMapData);
+        ClientCommunicationLayerManager.Handler.RegisterClientHandler<MapDataSpawnPacket>(SpawnMapData);
     }
 
     private void OnDisable()
     {
-        _clientPacketHandler.UnregisterClientHandler<MapDataSpawnPacket>();
+        ClientCommunicationLayerManager.Handler.UnregisterClientHandler<MapDataSpawnPacket>();
     }
 
     private void SpawnMapData(MapDataSpawnPacket packet)

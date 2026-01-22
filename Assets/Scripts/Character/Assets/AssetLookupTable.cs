@@ -7,5 +7,5 @@ public class AssetLookupTable : ScriptableObject
 {
     public List<EnemyAssetData> EnemyAssetDataList;
 
-    public List<PlayerAssetData<PlayerBaseAssetEnum>> PlayerAssetDataList;
+    public List<PlayerBaseAssetData> PlayerBaseAssetDataList;
 }

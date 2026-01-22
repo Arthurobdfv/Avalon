@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyCharacter : CombatCharacter
 {
     public new EnemyCombatBaseStats BaseStats => (EnemyCombatBaseStats)base.BaseStats;
-    public string EntityAssedId;
+    public string EntityAssetId;
     private void Start()
     {
         _currentHealth = base.BaseStats.Health;
