@@ -9,7 +9,7 @@ public class ServerCommunicationLayerManager : MonoBehaviour
     IAvalonPacketServerSender _packetSender;
     IAvalonPacketServerReceiver _packetReceiver;
 
-    ServerPacketHandler _packetHandler = new();
+    readonly ServerPacketHandler _packetHandler = new();
 
     public ServerPacketHandler Handler => _packetHandler;
 
