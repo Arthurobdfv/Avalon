@@ -106,10 +106,10 @@ public class GlobalEntitiesManager : MonoBehaviour
             var playersOnMap = PlayerEntitiesManager.PlayersOnMap(currentMap).ToDictionary(x => x.Id, x => (EntityInfo)new PlayerEntityInfo() { EntityType = EntityTypeEnum.Player, Position = x.transform.position, Rotation = x.CurrentDiretion, Movement = x.CurrentMovement, Equipment = x.Equipment });
             var enemiesOnMap = EnemyBehaviourManager.EnemiesOnMap(currentMap).ToDictionary(x => x.Id, x => (EntityInfo)new EnemyEntityInfo() { EntityType = EntityTypeEnum.Enemy, Position = x.transform.position, Rotation = x.CurrentDiretion, Movement = x.CurrentMovement, EntityAssetId = x.EntityAssetId });
 
-            Dictionary<string, EntityInfo> allEntities = playersOnMap.Concat(enemiesOnMap).ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value);
+            Dictionary<string, EntityInfo> entitiesOnMap = playersOnMap.Concat(enemiesOnMap).ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value);
             var packet = new EntitySpawnPacket()
             {
-                Entities = allEntities,
+                Entities = entitiesOnMap,
                 MapId = currentMap
             };
 
