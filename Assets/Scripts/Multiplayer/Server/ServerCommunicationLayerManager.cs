@@ -80,7 +80,7 @@ public class ServerCommunicationLayerManager : MonoBehaviour
         }
     }
 
-    private Dictionary<Type, List<ObserverInfo>> _packetObserversCache = new();
+    private readonly Dictionary<Type, List<ObserverInfo>> _packetObserversCache = new();
 
     private class ObserverInfo
     {
