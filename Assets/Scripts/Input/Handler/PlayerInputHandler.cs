@@ -1,132 +1,86 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Client-side input handler. Collects player input and sends it to the server.
+/// Entity state updates are received via EntitySpawnPacket handled by EntitySpawner.
+/// </summary>
 public class PlayerInputHandler : MonoBehaviour
 {
-    [SerializeField] PlayerCharacter _playerCharacter;
-    List<(DirectionEnum direction, float upperBand)> DirectionWithUpperBandMapping = new ();
     private PlayerInputState _currentInputState = null;
 
+    [SerializeField] ClientCommunicationLayerManager _clientCommunicationLayerManager;
+
     // TODO: Refactor into a different file
-    class PlayerInputState
+    [AvalonAuthorized]
+    public class PlayerInputState : AvalonPacket
     {
         public Vector2 LookDirection = Vector2.zero;
         public Vector2 MoveDirection = Vector2.zero;
         public bool AttackAction = false;
+        public bool SprintAction = false;
+        public bool InteractAction = false;
     }
 
 
-    // Start is called before the first frame update
     void OnEnable()
     {
-        PlayerInputMapper.OnSendMoveInput += HandleMoveInput;
-    }
+        if(_clientCommunicationLayerManager == null)
+        {
+            _clientCommunicationLayerManager = FindFirstObjectByType<ClientCommunicationLayerManager>();
+        }
 
+        if (_clientCommunicationLayerManager == null)
+        {
+            Debug.LogError("[PlayerInputHandler] ClientCommunicationLayerManager not found! Input will not be sent to server.");
+        }
+
+        PlayerInputMapper.OnSendMoveInput += HandleMoveInput;
+        PlayerInputMapper.OnSentInteractInput += HandleInteractInput;
+    }
 
     private void OnDisable()
     {
         PlayerInputMapper.OnSendMoveInput -= HandleMoveInput;
+        PlayerInputMapper.OnSentInteractInput -= HandleInteractInput;
     }
 
 
     private void FixedUpdate()
     {
-        if (_currentInputState != null)
+        // Send input to server (or local server in single-player mode)
+        if (_currentInputState != null && _clientCommunicationLayerManager != null)
         {
-            HandlePlayerMovement();
+            _clientCommunicationLayerManager.Send(_currentInputState);
             _currentInputState = null;
         }
     }
 
-    private void HandlePlayerMovement()
-    {
-        var hasMovementInput = _currentInputState.MoveDirection != Vector2.zero;
-        var characterFacingVector = hasMovementInput
-            ? _currentInputState.MoveDirection 
-            : _currentInputState.LookDirection;
-        _playerCharacter.SetDirection(Vector2DirectionEnum(characterFacingVector));
-
-        if (hasMovementInput)
-        {
-            // TODO: Replace hardcoded speed with character speed attribute
-            _playerCharacter.transform.position += (Vector3)_currentInputState.MoveDirection * 3 * Time.fixedDeltaTime;
-        }
-    }
-
-    // Creating a Stateful Input Handler for Player Character already thinking on having multiplayer in future
-    // Sets up the last input received for the player character to be able to handle on the next server tick
-    private void HandleMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool attackAction)
+    // Creates a stateful input for the player character to be sent on the next server tick
+    private void HandleMoveInput(Vector2 lookDirection, Vector2 moveDirection, bool sprintAction)
     {
         if (lookDirection != Vector2.zero)
         {
             GetCurrentInputState().LookDirection = lookDirection;
         }
 
-        if(moveDirection != Vector2.zero)
+        if (moveDirection != Vector2.zero)
         {
             GetCurrentInputState().MoveDirection = moveDirection;
         }
+        GetCurrentInputState().SprintAction = sprintAction;
+    }
 
-        GetCurrentInputState().AttackAction = attackAction;
+    private void HandleInteractInput()
+    {
+        GetCurrentInputState().InteractAction = true;
     }
 
     private PlayerInputState GetCurrentInputState()
     {
-        if( _currentInputState == null)
+        if (_currentInputState == null)
         {
             _currentInputState = new PlayerInputState();
         }
         return _currentInputState;
-    }
-
-    private DirectionEnum Vector2DirectionEnum(Vector2 direction)
-    {
-        if (direction == Vector2.zero)
-            return DirectionEnum.DIRECTION_NONE;
-
-        
-
-        var defaultDirection = Vector2.right;
-        var angle = Mathf.Atan2(direction.x, direction.y) * Mathf.Rad2Deg;
-        if (angle < 0)
-        {
-            angle = (360f + angle) % 360;
-        }
-        Debug.Log($"Angle calculated: {angle}");    
-
-        if (DirectionWithUpperBandMapping.Count == 0)
-        {
-            SetupDirectionWithUppderBandMapping();
-        }
-
-        foreach (var (directionEnum, upperBand) in DirectionWithUpperBandMapping)
-        {
-            if (angle <= upperBand)
-            {
-                return directionEnum;
-            }
-        }
-        return DirectionEnum.UPPER_RIGHT;
-    }
-
-    private void SetupDirectionWithUppderBandMapping()
-    {
-        DirectionWithUpperBandMapping.Clear();
-        DirectionWithUpperBandMapping.Add((DirectionEnum.UP, UpperBandFromIndex(0)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.UPPER_RIGHT, UpperBandFromIndex(1)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.RIGHT, UpperBandFromIndex(2)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.LOWER_RIGHT, UpperBandFromIndex(3)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.DOWN, UpperBandFromIndex(4)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.LOWER_LEFT, UpperBandFromIndex(5)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.LEFT, UpperBandFromIndex(6)));
-        DirectionWithUpperBandMapping.Add((DirectionEnum.UPPER_LEFT, UpperBandFromIndex(7)));
-    }
-
-    private float UpperBandFromIndex(int index)
-    {
-        var degreePerBand = 360f / 8f;
-        var initialOffset = degreePerBand / 2f;
-        return (index + 1) * degreePerBand - initialOffset;
     }
 }
