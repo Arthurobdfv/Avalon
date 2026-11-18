@@ -5,4 +5,5 @@ using UnityEngine;
 public class PlayerEquipmentPacket : AvalonPacket
 {
     public PlayerBaseAssetEnum PlayerBaseAsset;
+    public string PlayerId;
 }

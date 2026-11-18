@@ -6,7 +6,11 @@ using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Animations;
+using UnityEditorInternal;
 using UnityEngine;
+using AnimatorController = UnityEditor.Animations.AnimatorController;
+using AnimatorControllerParameterType = UnityEngine.AnimatorControllerParameterType;
+using BlendTree = UnityEditor.Animations.BlendTree;
 
 [CustomEditor(typeof(SpriteSheet2AnimDefinition))]
 [Serializable]
@@ -18,6 +22,8 @@ public class SpriteSheet2AnimCustomEditor : Editor
 
     readonly string basePath = Application.dataPath;
     string FullPath => Path.GetFullPath(Path.Combine(basePath, Target.CharacterAssetDefinition?.CharacterAssetPath));
+
+    public const string BaseCharacterAnimatorFileName = "Avalon_Base_Character_Anim";
 
     SpriteSheet2AnimDefinition Target => target as SpriteSheet2AnimDefinition;
     void OnEnable()
@@ -93,7 +99,7 @@ public class SpriteSheet2AnimCustomEditor : Editor
             AssetDatabase.CreateFolder("Assets", $"{Target.CharacterName}");
         }
         var animationList = new List<AnimationClip>();
-        var controller = GetOrCreateAnimatorForCharacter();
+        var controller = GetOrCreateBaseController();
         foreach (var animationDescrition in spriteSheetAnimationDescriptors)
         {
             Debug.Log($"Creating animation for {animationDescrition.AnimationName} from asset {animationDescrition.AnimationSetDefinition.name}");
@@ -137,7 +143,9 @@ public class SpriteSheet2AnimCustomEditor : Editor
             if (animationDescrition.AnimationSetDefinition.DirectionCount > 1)
             {
                 // TODO: Might move this logic somewhere else as in the future we could have multiple types of blend trees
-                AssignAnimationsToBlendTree(animationDescrition.AnimationName, animationDirectionMapping, controller);
+                var blendTree = CreateBlendTreesInController(animationDescrition.AnimationName, controller);
+                CreateAnimatorControllerOverride(controller);
+                //AssignAnimationsToBlendTree(blendTree, animationDirectionMapping);
             }
         }
         CreateAvalonAnimatorTransitions(controller);
@@ -146,36 +154,22 @@ public class SpriteSheet2AnimCustomEditor : Editor
         AssetDatabase.Refresh();
     }
 
-    private AnimatorController GetOrCreateAnimatorForCharacter()
+    private AnimatorController GetOrCreateBaseController()
     {
-        var t = AssetDatabase.FindAssets($"t:AnimatorController").Select(x => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(x), typeof(AnimatorController)) as AnimatorController).FirstOrDefault(x => x.name == Target.CharacterName);
+        var t = AssetDatabase.FindAssets($"t:AnimatorController").Select(x => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(x), typeof(AnimatorController)) as AnimatorController).FirstOrDefault(x => x.name == BaseCharacterAnimatorFileName);
         if (t != null)
         {
             return t;
         }
-        var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath($"Assets/{Target.CharacterName}/{Target.CharacterName}.controller");
+        var controller = UnityEditor.Animations.AnimatorController.CreateAnimatorControllerAtPath($"Assets/{Target.CharacterName}/{BaseCharacterAnimatorFileName}.controller");
         controller.AddParameter("DirectionX", AnimatorControllerParameterType.Float);
         controller.AddParameter("DirectionY", AnimatorControllerParameterType.Float);
         controller.AddParameter("Movement", AnimatorControllerParameterType.Int);
         return controller;
     }
 
-    private void AssignAnimationsToBlendTree(string blendTreeName, Dictionary<string, AnimationClip> animations, AnimatorController controller)
+    private void AssignAnimationsToBlendTree(BlendTree blendTree, Dictionary<string, AnimationClip> animations)
     {
-        var blendTree = new BlendTree();
-        var statess = controller.layers.Select(x => x.stateMachine).SelectMany(x => x.states).Where(x => x.state != null).Select(x => x.state);
-        if(statess.Any(x => x.name == blendTreeName))
-        {
-            return;
-        }
-
-        var state = controller.CreateBlendTreeInController(blendTreeName, out blendTree, 0);
-        // TODO: This can be a bledtree Setting asset
-        state.speed = 16f;
-        blendTree.name = blendTreeName;
-        blendTree.blendType = BlendTreeType.SimpleDirectional2D;
-        blendTree.blendParameter = "DirectionX";
-        blendTree.blendParameterY = "DirectionY";
         Vector2 pivot = new Vector2(0.5f, 0.5f);
         var position = (Quaternion.AngleAxis(0, Vector3.back)) * Vector2.up;
         var angleDiff = 360 / animations.Count();
@@ -194,7 +188,26 @@ public class SpriteSheet2AnimCustomEditor : Editor
         {
             blendTree.AddChild(animation.Value, eightDirectionalWheel[animation.Key]);
         }
+    }
 
+    private BlendTree CreateBlendTreesInController(string blendTreeName, AnimatorController controller)
+    {
+        var blendTree = new BlendTree();
+        var statess = controller.layers.Select(x => x.stateMachine).SelectMany(x => x.states).Where(x => x.state != null).Select(x => x.state);
+        if(statess.Any(x => x.name == blendTreeName))
+        {
+            return null;
+        }
+
+        var state = controller.CreateBlendTreeInController(blendTreeName, out blendTree, 0);
+        // TODO: This can be a bledtree Setting asset
+        state.speed = 16f;
+        blendTree.name = blendTreeName;
+        blendTree.blendType = BlendTreeType.SimpleDirectional2D;
+        blendTree.blendParameter = "DirectionX";
+        blendTree.blendParameterY = "DirectionY";
+
+        return blendTree;
     }
 
     // TODO: Currently tied up with Avalon specific animation transitions, the idea is turn this into an extensible system
@@ -208,7 +221,6 @@ public class SpriteSheet2AnimCustomEditor : Editor
         var walkAnim = states.FirstOrDefault(x => x.state.name == "Walk").state;
         var idleAnim = states.FirstOrDefault(x => x.state.name == "Idle").state;
         var runningAnim = states.FirstOrDefault(x => x.state.name == "Running").state;
-
 
         // Walk Transitions
         var walkTransitions = walkAnim.transitions;
@@ -239,5 +251,13 @@ public class SpriteSheet2AnimCustomEditor : Editor
             var walk2Idle = walkAnim?.AddTransition(idleAnim, false);
             walk2Idle?.AddCondition(AnimatorConditionMode.Equals, 0, "Movement");
         }
+    }
+
+    // TODO: Study and implement Animator Override Controller instead of a new animator Controller for each character / asset
+    private void CreateAnimatorControllerOverride(AnimatorController controller)
+    {
+        var overrideController = new AnimatorOverrideController();
+        overrideController.runtimeAnimatorController = controller;
+        AssetDatabase.CreateAsset(overrideController, $"Assets/{Target.CharacterName}/{Target.CharacterName}_Override.overrideController");
     }
 }

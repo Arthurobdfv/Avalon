@@ -6,17 +6,25 @@ using UnityEngine;
 public class MultiplayerConnectionManager : MonoBehaviour
 {
     private ServerCommunicationLayerManager _serverCommunicationManager;
+    private ServerCommunicationLayerManager ServerCommunicationLayerManager
+    {
+        get
+        {
+            if (_serverCommunicationManager == null)
+            {
+                _serverCommunicationManager = FindObjectOfType<ServerCommunicationLayerManager>();
+            }
+            return _serverCommunicationManager;
+        }
+    }
+
     public GlobalEntitiesManager GlobalEntitiesManager;
     private Dictionary<string, ObserverData> Observers = new();
     private void Start()
     {
-        if (_serverCommunicationManager == null)
-        {
-            _serverCommunicationManager = FindObjectOfType<ServerCommunicationLayerManager>();
-        }
-        _serverCommunicationManager.Handler.RegisterServerHandler<ConnectPlayerPacket>(OnConnectPlayer);
-        _serverCommunicationManager.Handler.RegisterServerHandler<ConnectObserverPacket>(OnObserverConnect);
-        _serverCommunicationManager.Handler.RegisterServerHandler<ObserveMapPacket>(ObserveMap);
+        ServerCommunicationLayerManager.Handler.RegisterServerHandler<ConnectPlayerPacket>(OnConnectPlayer);
+        ServerCommunicationLayerManager.Handler.RegisterServerHandler<ConnectObserverPacket>(OnObserverConnect);
+        ServerCommunicationLayerManager.Handler.RegisterServerHandler<ObserveMapPacket>(ObserveMap);
     }
 
     private void ObserveMap(ObserveMapPacket packet)
@@ -37,7 +45,7 @@ public class MultiplayerConnectionManager : MonoBehaviour
             observerData = new MapObserverData { ObserverId = packet.ClientId };
             Observers[packet.ClientId] = observerData;
             observerData.MapId = packet.MapId;
-            _serverCommunicationManager.RegisterObserver<EntitySpawnPacket>(packet.ClientId, (entitySpawnPacket) =>
+            ServerCommunicationLayerManager.RegisterObserver<EntitySpawnPacket>(packet.ClientId, (entitySpawnPacket) =>
             {
                 return observerData.MapId == entitySpawnPacket.MapId;
             });
@@ -50,7 +58,7 @@ public class MultiplayerConnectionManager : MonoBehaviour
         {
             var observerId = $"obs_{Guid.NewGuid().ToString()}";
             packet.SetClientId(observerId);
-            packet.ObserverId = observerId; 
+            packet.ObserverId = observerId;
         }
         if (Observers.ContainsKey(packet.ObserverId))
         {
@@ -64,14 +72,15 @@ public class MultiplayerConnectionManager : MonoBehaviour
             ObserverId = observerData.ObserverId,
         };
         response.SetClientId(packet.ObserverId);
-        _serverCommunicationManager.Send(response);
+        ClientConnected?.Invoke("Observer", packet.ObserverId);
+        ServerCommunicationLayerManager.Send(response);
     }
 
     private void OnDestroy()
     {
-        _serverCommunicationManager.Handler.UnregisterServerHandler<ConnectPlayerPacket>();
-        _serverCommunicationManager.Handler.UnregisterServerHandler<ConnectObserverPacket>();
-        _serverCommunicationManager.Handler.UnregisterServerHandler<ObserveMapPacket>();
+        ServerCommunicationLayerManager.Handler.UnregisterServerHandler<ConnectPlayerPacket>();
+        ServerCommunicationLayerManager.Handler.UnregisterServerHandler<ConnectObserverPacket>();
+        ServerCommunicationLayerManager.Handler.UnregisterServerHandler<ObserveMapPacket>();
     }
 
     private void OnConnectPlayer(ConnectPlayerPacket packet)
@@ -80,11 +89,16 @@ public class MultiplayerConnectionManager : MonoBehaviour
         GlobalEntitiesManager.OnPlayerConnect(packet);
         var playerStartEquip = new PlayerEquipmentPacket()
         {
-            PlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_FEMALE_BASE_01
+            PlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_FEMALE_BASE_01,
+            PlayerId = packet.PlayerId
         };
         playerStartEquip.SetClientId(packet.PlayerId);
-        _serverCommunicationManager.Send(playerStartEquip);
+        ClientConnected?.Invoke("Player", packet.PlayerId);
+        //ServerCommunicationLayerManager.Send(playerStartEquip);
     }
+
+    public delegate void OnClientConnect(string connectionType, string clientId);
+    public static event OnClientConnect ClientConnected;
 
     private class ObserverData
     {

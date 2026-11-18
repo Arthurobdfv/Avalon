@@ -2,15 +2,41 @@ using UnityEngine;
 
 public class LocalClientPacketSender : MonoBehaviour, IAvalonClientPacketSender
 {
-    [SerializeField] private LocalServerPacketReceiver _localPacketReceiver;
+    [SerializeField] private ServerCommunicationLayerManager _localPacketReceiver;
+    private bool _isInitialized = false;
 
-    private void Awake()
+    ServerCommunicationLayerManager LocalPacketReceiver
     {
-        _localPacketReceiver = FindFirstObjectByType<LocalServerPacketReceiver>() ?? throw new System.NullReferenceException("No IAvalonClientPacketSender found");
+        get
+        {
+            if (_localPacketReceiver == null)
+            {
+                _localPacketReceiver = FindFirstObjectByType<ServerCommunicationLayerManager>() ?? throw new System.NullReferenceException("No IAvalonClientPacketSender found");
+            }
+            return _localPacketReceiver;
+        }
+    }
+
+    public void Update()
+    {
+        if (_isInitialized)
+        {
+            ConnectPlayerPacket connectPacket = new ConnectPlayerPacket
+            {
+                PlayerName = "Admin"
+            };
+            connectPacket.PlayerId = System.Guid.NewGuid().ToString();
+            Send(connectPacket);
+            _isInitialized = true;
+        }
     }
 
     public void Send(AvalonPacket packet)
     {
-        _localPacketReceiver.Handle(packet);
+        if (string.IsNullOrEmpty(packet.ClientId))
+        {
+            packet.SetClientId(LocalServerPacketSender.CurrentPlayerId);
+        }
+        LocalPacketReceiver.Handle(packet);
     }
 }

@@ -53,7 +53,6 @@ High-level architecture
 - Purpose-built systems in the repo include: sprite-sheet-to-animation pipeline, entity manager and combat flow, enemy behaviour manager.
 - Design intent: Architecture docs (technical) separate from feature docs (user-facing).
 
-Documentation workflow (updated)
 
 Documentation workflow (updated)
 
@@ -85,6 +84,31 @@ Documentation workflow (updated)
   - Follow `docs/contributing/documentation-guide.md` when creating commit messages or PR descriptions from unstaged changes.
   - Add "Unstaged / Recent runtime changes" section for work-in-progress documentation
 
+## Packet Documentation Rules
+
+When the user creates, modifies, or asks for documentation updates involving network packets:
+
+1. **Update `docs/architecture/packet-serialization.md`**:
+   - Add new packets to the "Registered Packets" table with Type ID, properties, serializers, and size
+   - Add new serializers to the appropriate serializer table
+   - Update the Changelog section
+
+2. **Update `PacketDescribers.cs`**:
+   - Ensure the packet is registered with a unique Type ID
+   - Follow the Type ID ranges: 1-99 (Connection), 100-199 (Entity), 200-299 (Player Action), 300-399 (Map)
+
+3. **Packet table format** (for docs):
+   ```markdown
+   | `PacketName` | ID | `Prop1`, `Prop2` | Auto/Explicit | XX bytes |
+   ```
+
+4. **When user asks for "doc updates" or "update documentation"**:
+   - Check `PacketDescribers.cs` for all registered packets
+   - Compare with `docs/architecture/packet-serialization.md`
+   - Add any missing packets to the documentation
+   - Verify packet sizes by analyzing serializer output
+
+
 Manager summary (runtime & multiplayer)
 - `GlobalEntitiesManager`: global registry, listens to spawn/despawn, instantiates players on connect, and broadcasts per-map `EntitySpawnPacket` snapshots via `ServerCommunicationLayerManager.SendMap` in `LateUpdate`.
 - `PlayerEntitiesManager`: map-aware player lookup and interaction helper (assigns nearest enemy on the player map).
@@ -96,6 +120,26 @@ Manager summary (runtime & multiplayer)
 - `EntitySpawner` (client): receives `EntitySpawnPacket` from server, spawns/updates entities with authoritative position, direction, and movement state.
 - `DirectionEnumHelper`: shared static utility for Vector2 to `DirectionEnum` conversion, used by server-side input processing.
 - Combat is currently local/instance-authoritative; server-authoritative combat is a future goal.
+
+## Packet Serialization System Summary
+
+- **Documentation**: `docs/architecture/packet-serialization.md`
+- **Test runner**: `PacketSerializationTestRunner.RunTests()` (static class)
+- **Validation**: Tools > Avalon > Validate Packet Serialization (Editor menu)
+- **CLI testing**: `Unity.exe -batchmode -quit -executeMethod PacketSerializationTestRunner.RunTestsAndExit`
+
+### Current Registered Packets
+
+| Packet | ID | Properties |
+|--------|-----|------------|
+| ConnectPlayerPacket | 1 | PlayerId, PlayerName, AuthToken |
+| ConnectObserverPacket | 2 | ObserverId, ObserverName |
+| ObserveMapPacket | 3 | MapId |
+| EntitySpawnPacket | 100 | MapId, Entities |
+| PlayerEquipmentPacket | 101 | PlayerBaseAsset |
+| PlayerInputState | 200 | LookDirection, MoveDirection, AttackAction, SprintAction, InteractAction |
+| MapDataSpawnPacket | 300 | MapData |
+
 
 Documentation generation note: avoid inserting non-ASCII or special punctuation characters (for example: smart quotes, em-dashes, non-breaking spaces, and other locale-specific symbols) in generated Markdown files. Prefer ASCII characters and simple punctuation (straight quotes, hyphen-minus `-`, plain spaces). This reduces the risk of encoding errors during static site builds or when tools assume UTF-8 encoding.
 

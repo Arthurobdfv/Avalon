@@ -66,7 +66,7 @@ public class GlobalEntitiesManager : MonoBehaviour
         CombatCharacter.OnHealthReachZeroHandler -= OnEntityDeath;
         RespawnManager.EntitySpawnedHandler -= HandleEntitySpawned;
         RespawnManager.EntityDespawnedHandler -= HandleEntityDespawned;
-        serverCommunicationLayerManager.Handler.UnregisterServerHandler<PlayerEquipmentPacket>();
+        ServerCommunicationLayerManager.Handler.UnregisterServerHandler<PlayerEquipmentPacket>();
 
     }
 

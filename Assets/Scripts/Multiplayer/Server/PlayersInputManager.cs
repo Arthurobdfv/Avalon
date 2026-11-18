@@ -24,18 +24,25 @@ public class PlayersInputManager : MonoBehaviour
             _serverCommunicationLayerManager = FindFirstObjectByType<ServerCommunicationLayerManager>();
         }
 
-        _serverCommunicationLayerManager.Handler?.RegisterServerHandler<PlayerInputState>(HandlePlayerInputState);
+        ServerCommunicationLayerManager.Handler?.RegisterServerHandler<PlayerInputState>(HandlePlayerInputState);
     }
 
     private void OnDisable()
     {
-        _serverPacketHandler?.UnregisterServerHandler<PlayerInputState>();
+        ServerCommunicationLayerManager.Handler?.UnregisterServerHandler<PlayerInputState>();
     }
 
     private void HandlePlayerInputState(PlayerInputState state)
     {
         // Store the latest input state per client - overwrites previous if multiple arrive before processing
-        _pendingPlayerInputs[state.ClientId] = state;
+        if(_pendingPlayerInputs.ContainsKey(state.ClientId))
+        {
+            _pendingPlayerInputs[state.ClientId] = state;
+        }
+        else
+        {
+            _pendingPlayerInputs.Add(state.ClientId, state);
+        }
     }
 
     private void FixedUpdate()

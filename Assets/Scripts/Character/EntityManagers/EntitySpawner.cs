@@ -31,20 +31,6 @@ public class EntitySpawner : MonoBehaviour
     [field: SerializeField] public Dictionary<string, SpawnedEntity> SpawnedEntities { get; private set; } = new Dictionary<string, SpawnedEntity>();
     [field: SerializeField] public Dictionary<string, SpawnedEntityInfo> Characters { get; private set; } = new Dictionary<string, SpawnedEntityInfo>();
 
-
-    private ClientCommunicationLayerManager _clientCommunicationLayerManager;
-
-    ClientCommunicationLayerManager ClientCommunicationLayerManager
-    {
-        get
-        {
-            if (_clientCommunicationLayerManager == null)
-            {
-                _clientCommunicationLayerManager = FindAnyObjectByType<ClientCommunicationLayerManager>();
-            }
-            return _clientCommunicationLayerManager;
-        }
-    }
     // Start is called before the first frame update
     private void OnEnable()
     {
@@ -157,7 +143,7 @@ public class EntitySpawner : MonoBehaviour
         character.transform.position = value.Position;
         character.SetDirection(value.Rotation);
         character.SetMovement(value.Movement);
-        (Characters[key].UIComponent as PlayerUI).UpdatePlayerBaseAsset(playerEntityInfo.Equipment.BaseBody);
+        (Characters[key].UIComponent as PlayerUI).UpdatePlayerBaseAsset(playerEntityInfo.Equipment?.BaseBody ?? PlayerBaseAssetEnum.PLAYER_FEMALE_BASE_01);
     }
 
     private void UpdateEntity(string key, EntityInfo value)

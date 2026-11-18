@@ -7,13 +7,14 @@ public class PlayerUI : EntityUI
     [SerializeField] Character _character;
     [SerializeField] PlayerBaseAssetEnum _currentPlayerBaseAsset = PlayerBaseAssetEnum.PLAYER_ADVENTURER_BASE_01;
     [SerializeField] Animator _animator;
+    [SerializeField] CharacterAnimationAssetHandler characterAnimationAssetHandler;
 
     public void UpdatePlayerBaseAsset(PlayerBaseAssetEnum newAsset)
     {
         if(_currentPlayerBaseAsset != newAsset && newAsset != PlayerBaseAssetEnum.NONE)
         {
             _currentPlayerBaseAsset = newAsset;
-            _animator.runtimeAnimatorController = (RuntimeAnimatorController)GlobalAssetLookupProvider.PlayerBaseAssetDataDictionary[newAsset.ToString()].AssetAnimatorController;
+            //_animator.runtimeAnimatorController = (RuntimeAnimatorController)GlobalAssetLookupProvider.PlayerBaseAssetDataDictionary[newAsset.ToString()].AssetAnimatorController;
             //var assetData = GlobalAssetLookupProvider.PlayerBaseAssetDataDictionary[newAsset.ToString()];
             //_character.ApplyPlayerBaseAssetData(assetData);
         }

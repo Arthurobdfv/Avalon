@@ -1,4 +1,6 @@
 public interface IAvalonPacketClientReceiver
 {
-    void OnPacketReceived(AvalonPacket packet);
+    void Handle(AvalonPacket packet);
+    public delegate void OnPacketReceivedDelegate(AvalonPacket packet);
+    public event OnPacketReceivedDelegate OnPacketReceived;
 }

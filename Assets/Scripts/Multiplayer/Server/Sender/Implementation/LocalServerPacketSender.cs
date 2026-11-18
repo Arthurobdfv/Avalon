@@ -11,18 +11,29 @@ using UnityEngine;
 public class LocalServerPacketSender : MonoBehaviour, IAvalonPacketServerSender
 {
     [SerializeField] ClientCommunicationLayerManager clientCommunicationLayerManager;
+    ClientCommunicationLayerManager ClientCommunicationLayerManager
+    {
+        get
+        {
+            if (clientCommunicationLayerManager == null)
+            {
+                clientCommunicationLayerManager = FindFirstObjectByType<ClientCommunicationLayerManager>() ?? throw new System.NullReferenceException("No ClientCommunicationLayerManager found");
+            }
+            return clientCommunicationLayerManager;
+        }
+    }
     public static string CurrentPlayerId = "LOCAL_SERVER_CLIENT";
     public static string CurrentObserverId = string.Empty;
     public void Send(AvalonPacket packet)
     {
-        clientCommunicationLayerManager.Handle(packet);
+        ClientCommunicationLayerManager.Handle(packet);
     }
 
     public void Send(AvalonPacket packet, IEnumerable<string> recipientIds)
     {
         if (recipientIds.Contains(CurrentPlayerId) || recipientIds.Contains(CurrentObserverId))
         {
-            clientCommunicationLayerManager.Handle(packet);
+            ClientCommunicationLayerManager.Handle(packet);
         }
     }
 }

@@ -9,42 +9,59 @@ public class ServerCommunicationLayerManager : MonoBehaviour
     IAvalonPacketServerSender _packetSender;
     IAvalonPacketServerReceiver _packetReceiver;
 
-    readonly ServerPacketHandler _packetHandler = new();
-
-    public ServerPacketHandler Handler => _packetHandler;
-
-    private void Awake()
+    IAvalonPacketServerSender PacketSender
     {
-        _packetSender = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerSender>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerSender found");
-        // Change this to service provider fetching since network sender might not be monobehaviour in future
-        _packetReceiver = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerReceiver>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerReceiver found");
+        get
+        {
+            if (_packetSender == null)
+            {
+                _packetSender = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerSender>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerSender found");
+            }
+            return _packetSender;
+        }
     }
+
+    IAvalonPacketServerReceiver PacketReceiver
+    {
+        get
+        {
+            if (_packetReceiver == null)
+            {
+                _packetReceiver = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None).OfType<IAvalonPacketServerReceiver>().FirstOrDefault() ?? throw new NullReferenceException("No IAvalonPacketServerSender found");
+            }
+            return _packetReceiver;
+        }
+    }
+
+    static ServerPacketHandler _packetHandler = new();
+
+    public static ServerPacketHandler Handler => _packetHandler;
 
     private void OnEnable()
     {
-        _packetReceiver.OnPacketReceived += Handle;
+        PacketReceiver.OnPacketReceived += Handle;
     }
 
     private void OnDisable()
     {
-        _packetReceiver.OnPacketReceived -= Handle;
+        PacketReceiver.OnPacketReceived -= Handle;
     }
 
     internal void Handle(AvalonPacket packet)
     {
         //Debug.Log($"[ServerCommunicationLayerManager] Handling packet of type {packet.GetType().Name}");
-        _packetHandler.Handle(packet);
+        Handler.Handle(packet);
     }
 
     internal void Send(AvalonPacket packet)
     {
         //Debug.Log($"[ServerCommunicationLayerManager] Sending packet of type {packet.GetType().Name}");
-        _packetSender.Send(packet);
+        PacketSender.Send(packet);
     }
 
     internal void SendMap(AvalonPacket packet, string mapId)
     {
-        _packetSender.Send(packet, MapManager.GetEntityByType(EntityTypeEnum.Player, mapId).Concat(GetPacketObservers(packet)));
+        PacketSender.Send(packet, MapManager.GetEntityByType(EntityTypeEnum.Player, mapId).Concat(GetPacketObservers(packet)));
     }
 
     internal IEnumerable<string> GetPacketObservers(AvalonPacket packet)

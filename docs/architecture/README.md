@@ -48,6 +48,7 @@ Centralized entity registration and lifecycle management across maps.
 ### [Input System](input-system.md)
 Player input capture and distribution with multiplayer synchronization.
 
+
 **Key Components:**
 - `PlayerInputHandler` - Input collection and forwarding
 - `PlayerInputMapper` - Input device mapping
@@ -64,6 +65,18 @@ Character animation management with directional support.
 - Unity Animator integration
 
 **Status:** Implemented (basic, automation in progress)
+
+### [Packet Serialization](packet-serialization.md)
+Binary packet serialization system for network communication.
+
+**Key Components:**
+- `PacketDescriber<T>` - Fluent API for defining packet properties
+- `ITypeSerializer<T>` - Type-specific binary serializers
+- `PacketDescriberRegistry` - Central packet type registry
+- Auto-inference for common types (int, float, string, enum, Vector2/3)
+- Polymorphic support for entity types
+
+**Status:** Implemented (6 packets registered, tests available)
 
 ## System Interactions
 

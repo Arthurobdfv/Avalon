@@ -9,31 +9,21 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerInputState _currentInputState = null;
 
     [SerializeField] ClientCommunicationLayerManager _clientCommunicationLayerManager;
-
-    // TODO: Refactor into a different file
-    [AvalonAuthorized]
-    public class PlayerInputState : AvalonPacket
+    ClientCommunicationLayerManager ClientCommunicationLayerManager
     {
-        public Vector2 LookDirection = Vector2.zero;
-        public Vector2 MoveDirection = Vector2.zero;
-        public bool AttackAction = false;
-        public bool SprintAction = false;
-        public bool InteractAction = false;
+        get
+        {
+            if (_clientCommunicationLayerManager == null)
+            {
+                _clientCommunicationLayerManager = FindFirstObjectByType<ClientCommunicationLayerManager>() ?? throw new System.NullReferenceException("No ClientCommunicationLayerManager found");
+            }
+            return _clientCommunicationLayerManager;
+        }
     }
 
 
     void OnEnable()
     {
-        if(_clientCommunicationLayerManager == null)
-        {
-            _clientCommunicationLayerManager = FindFirstObjectByType<ClientCommunicationLayerManager>();
-        }
-
-        if (_clientCommunicationLayerManager == null)
-        {
-            Debug.LogError("[PlayerInputHandler] ClientCommunicationLayerManager not found! Input will not be sent to server.");
-        }
-
         PlayerInputMapper.OnSendMoveInput += HandleMoveInput;
         PlayerInputMapper.OnSentInteractInput += HandleInteractInput;
     }
@@ -48,9 +38,9 @@ public class PlayerInputHandler : MonoBehaviour
     private void FixedUpdate()
     {
         // Send input to server (or local server in single-player mode)
-        if (_currentInputState != null && _clientCommunicationLayerManager != null)
+        if (ClientCommunicationLayerManager != null && ClientCommunicationLayerManager != null)
         {
-            _clientCommunicationLayerManager.Send(_currentInputState);
+            ClientCommunicationLayerManager.Send(_currentInputState);
             _currentInputState = null;
         }
     }

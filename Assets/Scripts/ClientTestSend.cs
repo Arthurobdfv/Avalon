@@ -36,7 +36,7 @@ public class ClientTestSend : MonoBehaviour
             {
                 return;
             }
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Input.GetKeyDown(KeyCode.I))
             {
                 ConnectPlayerPacket packet = new ConnectPlayerPacket()
                 {
@@ -53,7 +53,7 @@ public class ClientTestSend : MonoBehaviour
                 {
                     return;
                 }
-                ClientCommunicationManager.Handler.RegisterClientHandler<ConnectObserverPacket>(ObserverConnectionCallback);
+                ClientCommunicationLayerManager.Handler.RegisterClientHandler<ConnectObserverPacket>(ObserverConnectionCallback);
                 ConnectObserverPacket connectPacket = new ConnectObserverPacket();
                 ClientCommunicationManager.Send(connectPacket);
             }
@@ -89,7 +89,7 @@ public class ClientTestSend : MonoBehaviour
         observeMapPacket.SetClientId(packet.ObserverId);
         LocalServerPacketSender.CurrentObserverId = packet.ObserverId;
         ClientCommunicationManager.Send(observeMapPacket);
-        ClientCommunicationManager.Handler.UnregisterClientHandler<ConnectObserverPacket>();
+        ClientCommunicationLayerManager.Handler.UnregisterClientHandler<ConnectObserverPacket>();
         clientInstance = Instantiate(_observerPrefab);
     }
 }
